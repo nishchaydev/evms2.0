@@ -1,0 +1,254 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+// Enums
+// Enum Role removed to use Model
+
+
+enum EmployeeStatus {
+  PENDING
+  ACTIVE
+  SUSPENDED
+  RETIRED
+  ON_LEAVE
+}
+
+enum ReportStatus {
+  PENDING
+  REVIEWED
+  RESOLVED
+  DISMISSED
+}
+
+// Models
+
+// Models
+
+model User {
+  id          String   @id @default(uuid())
+  username    String   @unique
+  password    String   // Hashed
+  name        String
+  
+  // RBAC
+  roleId      String
+  role        Role     @relation(fields: [roleId], references: [id])
+  
+  department  String?  // For HODs/Officers tied to a dept
+  
+  // Security
+  sessionVersion Int      @default(1) // For single session enforcement
+  
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  auditLogs   AuditLog[]
+  passwordRequests PasswordRequest[]
+  scanLogs    ScanLog[]
+  searchLogs  SearchLog[]
+  permissions Permission[]
+  preferences Json?
+}
+
+model PasswordRequest {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  status    String   @default("PENDING") // PENDING, RESOLVED, REJECTED
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Role {
+  id          String   @id @default(uuid())
+  name        String   @unique // SUPER_ADMIN, ADMIN, OFFICER
+  description String?
+  permissions Permission[]
+  users       User[]
+}
+
+model Permission {
+  id          String   @id @default(uuid())
+  name        String   @unique // VIEW_EMPLOYEE, EDIT_EMPLOYEE
+  description String?
+  roles       Role[]
+  users       User[]
+}
+
+model Employee {
+  id              String         @id @default(uuid())
+  employeeCode    String         @unique
+  firstName       String
+  lastName        String
+  photoUrl        String?
+  department      String
+  designation     String
+  status          EmployeeStatus @default(ACTIVE)
+  
+  dob             DateTime @default("1990-01-01T00:00:00Z")
+  email           String?
+  // Expanded Details
+  zone            String?
+  fatherName      String?
+  maritalStatus   String?
+  bloodGroup      String?
+  
+  // Employment Details
+  confirmationDate DateTime?
+  payGrade        String? // e.g. "Level-9 (Grade Pay 3600)"
+  reportingOfficer String?
+
+  // Confidential Data
+  joiningDate     DateTime
+  contactNumber   String? 
+  currentAddress  String?  @map("address") // Renaming mapped field for clarity if possible, or just add permanent
+  permanentAddress String?
+  
+  experience      Json? // Job History / Promotions
+  experiences     Experience[]
+  recruitments    Recruitment[]
+  education       Education[]
+  
+  // System
+  qr            EmployeeQR?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  
+  reports         Report[]
+  scanLogs        ScanLog[]
+}
+
+model Education {
+  id           String   @id @default(cuid())
+  employeeId   String
+  employee     Employee @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+  
+  level        String   // e.g. 10th, 12th, Graduation
+  degree       String   // e.g. B.Tech, MBA
+  institution  String
+  passingYear  String
+  grade        String?  // e.g. 8.5 CGPA, A+
+
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model EmployeeQR {
+    id          String   @id @default(uuid())
+    token       String   @unique
+    generatedAt DateTime @default(now())
+    
+    employeeId  String   @unique
+    employee    Employee @relation(fields: [employeeId], references: [id])
+}
+
+model AuditLog {
+  id        String   @id @default(uuid())
+  action    String
+  details   String?
+  userId    String?
+  user      User?    @relation(fields: [userId], references: [id])
+  timestamp DateTime @default(now())
+  ipAddress String?
+}
+
+enum Priority {
+  LOW
+  MEDIUM
+  HIGH
+  CRITICAL
+}
+
+model Report {
+  id          String       @id @default(uuid())
+  description String
+  location    String?
+  category    String?
+  department  String?  // Routing for general reports
+  status      ReportStatus @default(PENDING)
+  priority    Priority     @default(MEDIUM)
+  createdAt   DateTime     @default(now())
+  
+  employeeId  String?
+  employee    Employee?     @relation(fields: [employeeId], references: [id])
+
+  images      ReportImage[]
+
+  @@index([status])
+  @@index([department])
+  @@index([priority])
+  @@index([employeeId])
+  @@index([status, createdAt]) // For Escalation Cron
+  @@index([category, location]) // For Duplicate Check
+}
+
+model ReportImage {
+    id        String   @id @default(uuid())
+    url       String
+    reportId  String
+    report    Report   @relation(fields: [reportId], references: [id])
+    uploadedAt DateTime @default(now())
+}
+
+
+model Experience {
+  id           String   @id @default(cuid())
+  employeeId   String
+  employee     Employee @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+  
+  company      String
+  designation  String
+  startDate    DateTime
+  endDate      DateTime?
+  description  String?
+  location     String?
+
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model Recruitment {
+  id           String   @id @default(cuid())
+  employeeId   String
+  employee     Employee @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+  
+  examName     String
+  examYear     String
+  rollNumber   String?
+  rank         String?
+  score        String?
+  category     String?
+  orderNumber  String?
+  orderDate    DateTime?
+  
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model ScanLog {
+  id         String   @id @default(uuid())
+  scannerId  String?
+  scanner    User?    @relation(fields: [scannerId], references: [id])
+  employeeId String?
+  employee   Employee? @relation(fields: [employeeId], references: [id])
+  status     String   // SUCCESS, FAILED
+  scannedAt  DateTime @default(now())
+  details    String?
+}
+
+model SearchLog {
+  id           String   @id @default(uuid())
+  userId       String?
+  user         User?    @relation(fields: [userId], references: [id])
+  query        String
+  timestamp    DateTime @default(now())
+  resultsCount Int      @default(0)
+}
