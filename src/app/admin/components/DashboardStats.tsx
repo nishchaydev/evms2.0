@@ -63,15 +63,9 @@ const StatCard = ({ title, value, icon, color, delay }: StatCardProps) => (
                 <Typography variant="h3" fontWeight="bold" sx={{ color: 'text.primary' }}>
                     {value.toLocaleString()}
                 </Typography>
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, mt: 1 }}>
-                    <TrendingUp size={16} color="#10b981" />
-                    <Typography variant="caption" color="success.main" fontWeight="600">
-                        +12% vs last month
-                    </Typography>
-                </Box>
             </Box>
         </Paper>
-    </motion.div>
+    </motion.div >
 );
 
 interface DashboardStatsData {
