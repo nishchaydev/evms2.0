@@ -134,12 +134,16 @@ export async function getEmployees(
             const payload = await verifyJWT(token);
             if (payload) {
                 userRole = payload.role as string;
-                if (userRole !== 'SUPER_ADMIN') {
+                // SUPER_ADMIN and ADMIN see all employees if no department is assigned specifically to them
+                if (userRole !== 'SUPER_ADMIN' && userRole !== 'ADMIN') {
                     userDepartment = payload.department as string;
-                    // SECURITY FIX: If user is not Super Admin but has no department, DENY ACCESS.
+                    // SECURITY FIX: If user is not Admin/Super Admin but has no department, DENY ACCESS.
                     if (!userDepartment) {
                         return { data: [], meta: { total: 0, page, limit, totalPages: 0 } };
                     }
+                } else {
+                    // Even for Admins, if they have a department property in JWT, we honor it (optional restriction)
+                    userDepartment = (payload.department as string) || null;
                 }
             }
         }
