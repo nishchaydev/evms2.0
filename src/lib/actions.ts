@@ -22,10 +22,10 @@ export async function getEmployees() {
 export async function searchEmployees(query: string) {
     if (!query) return [];
     try {
-        return await prisma.employee.findMany({
+        const results = await prisma.employee.findMany({
             where: {
                 OR: [
-                    { firstName: { contains: query } }, // Case insensitive usually depends on DB collation (SQLite is sensitive by default unless configured)
+                    { firstName: { contains: query } },
                     { lastName: { contains: query } },
                     { designation: { contains: query } },
                 ],
@@ -38,9 +38,28 @@ export async function searchEmployees(query: string) {
                 designation: true,
                 photoUrl: true,
                 status: true,
-                // Public fields only? Search usually returns basic info
             },
         });
+
+        // Audit Logging
+        try {
+            const { cookies } = await import('next/headers');
+            const { verifyJWT } = await import('@/lib/auth');
+            const { logSearch } = await import('@/lib/log-actions');
+
+            const cookieStore = await cookies();
+            const tokenCookie = cookieStore.get('token');
+            if (tokenCookie) {
+                const payload = await verifyJWT(tokenCookie.value);
+                if (payload && payload.userId) {
+                    await logSearch(payload.userId as string, query, results.length);
+                }
+            }
+        } catch (logError) {
+            console.error("Failed to write SearchLog", logError);
+        }
+
+        return results;
     } catch (error) {
         return [];
     }

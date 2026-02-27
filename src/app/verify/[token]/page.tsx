@@ -62,6 +62,36 @@ export default async function VerifyPage(props: PageProps) {
     const { token } = params;
     const employee = await getEmployeeByToken(token);
 
+    // Role Check & Audit Logging
+    const cookieStore = await cookies();
+    const tokenCookie = cookieStore.get('token');
+    let viewerRole = 'PUBLIC';
+    let viewerId: string | null = null;
+
+    if (tokenCookie) {
+        const payload = await verifyJWT(tokenCookie.value);
+        if (payload && payload.role) {
+            viewerRole = payload.role as string;
+            viewerId = payload.userId as string;
+        }
+    }
+
+    const isOfficer = ['OFFICER', 'ADMIN', 'SUPER_ADMIN'].includes(viewerRole);
+
+    // Audit the Scan
+    if (isOfficer && viewerId) {
+        try {
+            const { logScan } = await import('@/lib/log-actions');
+            if (employee) {
+                await logScan(viewerId, employee.id, 'SUCCESS', 'Scanned via QR verify page');
+            } else {
+                await logScan(viewerId, null as any, 'FAILED', `Invalid/Suspended Token: ${token}`);
+            }
+        } catch (e) {
+            console.error("Scan logging failed", e);
+        }
+    }
+
     if (!employee) {
         return (
             <Container maxWidth="sm" sx={{ mt: 10 }}>
@@ -70,20 +100,6 @@ export default async function VerifyPage(props: PageProps) {
             </Container>
         );
     }
-
-    // Role Check
-    const cookieStore = await cookies();
-    const tokenCookie = cookieStore.get('token');
-    let viewerRole = 'PUBLIC';
-
-    if (tokenCookie) {
-        const payload = await verifyJWT(tokenCookie.value);
-        if (payload && payload.role) {
-            viewerRole = payload.role as string;
-        }
-    }
-
-    const isOfficer = ['OFFICER', 'ADMIN', 'SUPER_ADMIN'].includes(viewerRole);
 
 
 
