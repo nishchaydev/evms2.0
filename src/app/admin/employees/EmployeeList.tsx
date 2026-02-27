@@ -161,9 +161,10 @@ export default function EmployeeList({ initialEmployees, initialMeta }: Employee
                     {/* Header */}
                     <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 2 }}>
                         <Box>
-                            <Typography variant="h4" fontWeight="bold" sx={{ background: 'linear-gradient(45deg, #2563eb, #7c3aed)', backgroundClip: 'text', textFillColor: 'transparent', width: 'fit-content' }}>
+                            <Typography variant="h4" fontWeight="bold" sx={{ background: 'linear-gradient(45deg, #064E3B, #059669)', backgroundClip: 'text', textFillColor: 'transparent', width: 'fit-content' }}>
                                 Employee Management
                             </Typography>
+
                             <Typography variant="body1" color="text.secondary">View, search, and manage all registered employees.</Typography>
                         </Box>
                         <Button
@@ -171,7 +172,8 @@ export default function EmployeeList({ initialEmployees, initialMeta }: Employee
                             startIcon={<PersonAddIcon />}
                             component={Link}
                             href="/admin/employees/add"
-                            sx={{ borderRadius: 3, px: 3, py: 1, background: 'linear-gradient(45deg, #2563eb 30%, #7c3aed 90%)', boxShadow: '0 4px 14px 0 rgba(124, 58, 237, 0.4)' }}
+                            sx={{ borderRadius: 3, px: 3, py: 1, background: 'linear-gradient(45deg, #064E3B 30%, #059669 90%)', boxShadow: '0 4px 14px 0 rgba(5, 150, 105, 0.4)' }}
+
                         >
                             Add New Employee
                         </Button>
@@ -365,7 +367,8 @@ export default function EmployeeList({ initialEmployees, initialMeta }: Employee
                                                             href={`/admin/employees/${employee.id}/edit`}
                                                             sx={{
                                                                 bgcolor: 'action.hover',
-                                                                '&:hover': { bgcolor: 'primary.main', color: 'white' },
+                                                                '&:hover': { bgcolor: '#064E3B', color: 'white' },
+
                                                                 transition: 'all 0.2s'
                                                             }}
                                                         >

@@ -83,7 +83,7 @@ export default function DashboardStats({ stats }: { stats: DashboardStatsData })
                     title="Total Employees"
                     value={stats.totalEmployees}
                     icon={<Users size={24} />}
-                    color="#2563eb"
+                    color="#064E3B"
                     delay={0.1}
                 />
             </Grid>

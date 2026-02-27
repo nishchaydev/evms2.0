@@ -161,7 +161,7 @@ export default function FlipCard({ employee }: { employee: Employee }) {
                             </Grid>
                         </Grid>
                     </Box>
-                    <Box sx={{ height: 4, background: 'linear-gradient(90deg, rgba(31,137,229,0.4) 0%, rgba(31,137,229,1) 50%, rgba(31,137,229,0.4) 100%)', opacity: 0.3 }} />
+                    <Box sx={{ height: 4, background: 'linear-gradient(90deg, rgba(6, 78, 59, 0.4) 0%, rgba(5, 150, 105, 1) 50%, rgba(6, 78, 59, 0.4) 100%)', opacity: 0.3 }} />
                 </Paper>
 
                 {/* BACK SIDE */}

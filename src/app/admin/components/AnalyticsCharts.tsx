@@ -15,7 +15,7 @@ interface AnalyticsProps {
     }
 }
 
-const COLORS = ['#2563eb', '#10b981', '#f59e0b', '#ef4444', '#64748b'];
+const COLORS = ['#064E3B', '#10b981', '#f59e0b', '#ef4444', '#64748b'];
 
 export default function AnalyticsCharts({ data }: AnalyticsProps) {
     const theme = useTheme();

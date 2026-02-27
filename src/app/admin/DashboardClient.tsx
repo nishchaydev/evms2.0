@@ -106,7 +106,8 @@ export default function AdminDashboard({ initialStats, initialActivities, initia
             {/* Header */}
             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', flexWrap: 'wrap', gap: 2 }}>
                 <Box>
-                    <Typography variant="h4" fontWeight="bold" sx={{ background: 'linear-gradient(45deg, #1e40af, #059669)', backgroundClip: 'text', textFillColor: 'transparent', width: 'fit-content' }}>
+                    <Typography variant="h4" fontWeight="bold" sx={{ background: 'linear-gradient(45deg, #064E3B, #059669)', backgroundClip: 'text', textFillColor: 'transparent', width: 'fit-content' }}>
+
                         Dashboard Overview
                     </Typography>
                     <Typography variant="body1" color="text.secondary">Welcome to the Administration Portal</Typography>
@@ -140,10 +141,10 @@ export default function AdminDashboard({ initialStats, initialActivities, initia
                 <Grid item xs={12} lg={4}>
                     <Typography variant="h6" fontWeight="bold" gutterBottom sx={{ px: 1 }}>Quick Actions</Typography>
                     <Grid container spacing={2}>
-                        {[{ icon: <PersonAddIcon />, label: 'Add Employee', color: '#1e40af', bg: '#eff6ff', href: '/admin/employees/add' },
-                        { icon: <PlaylistAddIcon />, label: 'Manage Employees', color: '#1d4ed8', bg: '#eff6ff', href: '/admin/employees' },
+                        {[{ icon: <PersonAddIcon />, label: 'Add Employee', color: '#064E3B', bg: '#ecfdf5', href: '/admin/employees/add' },
+                        { icon: <PlaylistAddIcon />, label: 'Manage Employees', color: '#059669', bg: '#ecfdf5', href: '/admin/employees' },
                         { icon: <QrCodeScannerIcon />, label: 'ID Cards', color: '#047857', bg: '#ecfdf5', href: '/admin/qr' },
-                        { icon: <HistoryEduIcon />, label: 'Reports', color: '#c2410c', bg: '#fff7ed', href: '/admin/reports' }
+                        { icon: <HistoryEduIcon />, label: 'Reports', color: '#06503f', bg: '#ecfdf5', href: '/admin/reports' }
                         ].map((action, i) => (
                             <Grid item xs={6} key={i}>
                                 <GlassCard

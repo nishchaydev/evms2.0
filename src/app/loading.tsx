@@ -18,7 +18,7 @@ export default function Loading() {
             bgcolor: 'rgba(255, 255, 255, 0.8)',
             backdropFilter: 'blur(10px)'
         }}>
-            <CircularProgress size={60} thickness={4} sx={{ color: '#2563eb', mb: 2 }} />
+            <CircularProgress size={60} thickness={4} sx={{ color: '#064E3B', mb: 2 }} />
             <Typography variant="h6" color="text.secondary" fontWeight="medium">
                 Loading EVMS...
             </Typography>
