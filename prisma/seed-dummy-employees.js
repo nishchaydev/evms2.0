@@ -11,6 +11,8 @@ const prisma = new PrismaClient({
 const team1 = ["Nishchay", "Pratibha", "Vishal", "Nikhil", "Pratyaksh", "Shreyansh"];
 const team2 = ["Sachin", "Mohit", "Nayan", "Vishal"];
 
+const { v4: uuidv4 } = require('uuid');
+
 async function main() {
     console.log('Seeding dummy employees...');
     try {
@@ -26,6 +28,11 @@ async function main() {
                     designation: "Developer",
                     status: "ACTIVE",
                     joiningDate: new Date(),
+                    qr: {
+                        create: {
+                            token: uuidv4()
+                        }
+                    }
                 }
             });
         }
@@ -40,6 +47,11 @@ async function main() {
                     designation: "Developer",
                     status: "ACTIVE",
                     joiningDate: new Date(),
+                    qr: {
+                        create: {
+                            token: uuidv4()
+                        }
+                    }
                 }
             });
         }
