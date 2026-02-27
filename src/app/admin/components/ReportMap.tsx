@@ -41,7 +41,14 @@ const highIcon = L.icon({
 });
 
 interface ReportMapProps {
-    reports: any[];
+    reports: {
+        id: string;
+        location?: string | null;
+        priority?: string | null;
+        description: string;
+        category: string;
+        createdAt: string | Date;
+    }[];
 }
 
 export default function ReportMap({ reports }: ReportMapProps) {
@@ -49,6 +56,7 @@ export default function ReportMap({ reports }: ReportMapProps) {
 
     useEffect(() => {
         setIsMounted(true);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     if (!isMounted) return <Paper sx={{ height: 400, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>Loading Map...</Paper>;
@@ -66,7 +74,7 @@ export default function ReportMap({ reports }: ReportMapProps) {
             <MapContainer center={center} zoom={13} style={{ height: '100%', width: '100%' }}>
                 <TileLayer
                     url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                    attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                    attribution="&copy; <a href=&quot;https://www.openstreetmap.org/copyright&quot;>OpenStreetMap</a> contributors"
                 />
 
                 {validReports.map((report) => {

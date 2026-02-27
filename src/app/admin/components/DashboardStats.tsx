@@ -74,7 +74,14 @@ const StatCard = ({ title, value, icon, color, delay }: StatCardProps) => (
     </motion.div>
 );
 
-export default function DashboardStats({ stats }: { stats: any }) {
+interface DashboardStatsData {
+    totalEmployees: number;
+    activeEmployees: number;
+    qrGenerated: number;
+    pendingReports: number;
+}
+
+export default function DashboardStats({ stats }: { stats: DashboardStatsData }) {
     return (
         <Grid container spacing={3}>
             <Grid item xs={12} sm={6} lg={3}>
@@ -100,7 +107,7 @@ export default function DashboardStats({ stats }: { stats: any }) {
                     title="QR Issued"
                     value={stats.qrGenerated}
                     icon={<QrCode size={24} />}
-                    color="#7c3aed"
+                    color="#0ea5e9"
                     delay={0.3}
                 />
             </Grid>

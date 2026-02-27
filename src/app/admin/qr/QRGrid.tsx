@@ -34,6 +34,7 @@ import EmailIcon from '@mui/icons-material/Email';
 import PhoneIcon from '@mui/icons-material/Phone';
 import HomeIcon from '@mui/icons-material/Home';
 import CreditCardIcon from '@mui/icons-material/CreditCard';
+import VerifiedIcon from '@mui/icons-material/Verified';
 
 export default function QRGrid({ initialEmployees }: QRGridProps) {
     const [employees, setEmployees] = useState<EmployeeQR[]>(initialEmployees);
@@ -110,88 +111,105 @@ export default function QRGrid({ initialEmployees }: QRGridProps) {
                     <Grid container spacing={3}>
                         {filteredEmployees.map((emp) => (
                             <Grid item xs={12} sm={6} lg={4} xl={3} key={emp.id}>
-                                <Card
+                                <Box
                                     component={Button}
                                     onClick={() => handleCardClick(emp)}
                                     sx={{
                                         width: '100%',
                                         textTransform: 'none',
                                         textAlign: 'left',
-                                        border: 1,
-                                        borderColor: 'divider',
-                                        borderRadius: 3,
-                                        overflow: 'hidden',
                                         position: 'relative',
-                                        transition: 'all 0.2s',
-                                        '&:hover': { transform: 'translateY(-4px)', boxShadow: 4, borderColor: 'primary.main' },
-                                        p: 0
+                                        borderRadius: 4,
+                                        overflow: 'hidden',
+                                        p: 0,
+                                        transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                                        '&:hover': {
+                                            transform: 'translateY(-8px) rotate(1deg)',
+                                            '& .glass-overlay': { opacity: 1 }
+                                        }
                                     }}
                                 >
-                                    <Box sx={{ height: 8, bgcolor: 'primary.main', width: '100%' }} />
-                                    <CardContent sx={{ p: 2 }}>
-                                        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 2 }}>
-                                            {/* LEFT: Info */}
-                                            <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 1.5, flex: 1 }}>
-                                                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-                                                    <Avatar
-                                                        src={emp.photoUrl || undefined}
-                                                        sx={{ width: 56, height: 56, border: 2, borderColor: 'background.paper', boxShadow: 1 }}
-                                                    >
-                                                        {emp.firstName.charAt(0)}
-                                                    </Avatar>
-                                                    <Box>
-                                                        <Typography variant="h6" fontWeight="bold" sx={{ fontSize: '1rem', lineHeight: 1.2 }}>
-                                                            {emp.firstName} {emp.lastName}
-                                                        </Typography>
-                                                        <Typography variant="body2" color="text.secondary" sx={{ fontSize: '0.8rem' }}>
-                                                            {emp.designation}
-                                                        </Typography>
-                                                    </Box>
-                                                </Box>
+                                    {/* Glassmorphism Background */}
+                                    <Box sx={{
+                                        position: 'absolute',
+                                        inset: 0,
+                                        background: 'linear-gradient(135deg, rgba(6, 78, 59, 0.8) 0%, rgba(5, 150, 105, 0.4) 100%)',
+                                        backdropFilter: 'blur(10px)',
+                                        zIndex: 1
+                                    }} />
 
-                                                <Chip
-                                                    label={emp.department}
-                                                    size="small"
-                                                    color="primary"
-                                                    variant="outlined"
-                                                    sx={{ height: 20, fontSize: '0.7rem' }}
-                                                />
+                                    {/* Decorative Patterns */}
+                                    <Box sx={{
+                                        position: 'absolute',
+                                        top: -20,
+                                        right: -20,
+                                        width: 100,
+                                        height: 100,
+                                        borderRadius: '50%',
+                                        background: 'rgba(255, 255, 255, 0.1)',
+                                        zIndex: 2
+                                    }} />
 
-                                                <Box sx={{ bgcolor: 'action.hover', px: 1, py: 0.5, borderRadius: 1, width: '100%' }}>
-                                                    <Typography variant="caption" fontWeight="bold" display="block" color="text.secondary">ID NO:</Typography>
-                                                    <Typography variant="body2" fontWeight="bold" sx={{ fontFamily: 'monospace' }}>
-                                                        {emp.employeeCode}
-                                                    </Typography>
-                                                </Box>
-                                            </Box>
+                                    <Box sx={{ position: 'relative', zIndex: 3, p: 3, width: '100%', color: 'white' }}>
+                                        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                                            <Avatar
+                                                src={emp.photoUrl || undefined}
+                                                sx={{
+                                                    width: 80,
+                                                    height: 80,
+                                                    border: '3px solid rgba(255, 255, 255, 0.3)',
+                                                    boxShadow: '0 8px 32px 0 rgba(0, 0, 0, 0.2)'
+                                                }}
+                                            >
+                                                {emp.firstName.charAt(0)}
+                                            </Avatar>
 
-                                            {/* RIGHT: QR Code */}
-                                            {qrImages[emp.id] ? (
+                                            {qrImages[emp.id] && (
                                                 <Box sx={{
-                                                    p: 0.5,
+                                                    p: 1,
                                                     bgcolor: 'white',
-                                                    borderRadius: 1,
-                                                    border: '1px solid',
-                                                    borderColor: 'divider',
-                                                    display: 'flex',
-                                                    flexDirection: 'column',
-                                                    alignItems: 'center'
+                                                    borderRadius: 2,
+                                                    boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
                                                 }}>
                                                     <img
                                                         src={qrImages[emp.id]}
                                                         alt="QR"
-                                                        style={{ width: '80px', height: '80px', display: 'block' }}
+                                                        style={{ width: '60px', height: '60px', display: 'block' }}
                                                     />
                                                 </Box>
-                                            ) : (
-                                                <Box sx={{ width: 80, height: 80, bgcolor: 'action.hover', borderRadius: 1 }} />
                                             )}
                                         </Box>
-                                    </CardContent>
-                                    <Box sx={{ position: 'absolute', top: 12, right: 12 }}>
-                                        <BadgeIcon color="disabled" fontSize="small" />
+
+                                        <Box sx={{ mt: 3 }}>
+                                            <Typography variant="h6" fontWeight="900" sx={{ letterSpacing: 0.5, lineHeight: 1.2 }}>
+                                                {emp.firstName} {emp.lastName}
+                                            </Typography>
+                                            <Typography variant="caption" sx={{ opacity: 0.8, textTransform: 'uppercase', fontWeight: 700, letterSpacing: 1 }}>
+                                                {emp.designation}
+                                            </Typography>
+                                        </Box>
+
+                                        <Box sx={{ mt: 2, pt: 2, borderTop: '1px solid rgba(255, 255, 255, 0.1)', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end' }}>
+                                            <Box>
+                                                <Typography variant="caption" sx={{ opacity: 0.6, display: 'block' }}>Department</Typography>
+                                                <Typography variant="body2" fontWeight="700">{emp.department}</Typography>
+                                            </Box>
+                                            <Typography variant="caption" sx={{ fontFamily: 'monospace', bgcolor: 'rgba(255, 255, 255, 0.1)', px: 1, py: 0.5, borderRadius: 1 }}>
+                                                {emp.employeeCode}
+                                            </Typography>
+                                        </Box>
                                     </Box>
-                                </Card>
+
+                                    {/* Hover Shine Effect */}
+                                    <Box className="glass-overlay" sx={{
+                                        position: 'absolute',
+                                        inset: 0,
+                                        background: 'linear-gradient(45deg, transparent 0%, rgba(255,255,255,0.1) 50%, transparent 100%)',
+                                        transition: 'opacity 0.3s',
+                                        opacity: 0,
+                                        zIndex: 4
+                                    }} />
+                                </Box>
                             </Grid>
                         ))}
                     </Grid>
@@ -262,60 +280,96 @@ export default function QRGrid({ initialEmployees }: QRGridProps) {
                     onClose={handleCloseDialog}
                     maxWidth="sm"
                     fullWidth
-                    PaperProps={{ sx: { borderRadius: 4, overflow: 'hidden' } }}
+                    PaperProps={{
+                        sx: {
+                            borderRadius: 6,
+                            overflow: 'hidden',
+                            background: 'linear-gradient(135deg, #ffffff 0%, #f3f4f6 100%)',
+                            boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)'
+                        }
+                    }}
                 >
-                    <Box sx={{ position: 'relative', bgcolor: 'primary.main', height: 120 }}>
-                        <IconButton onClick={handleCloseDialog} sx={{ position: 'absolute', top: 8, right: 8, color: 'white' }}>
+                    <Box sx={{ position: 'relative', bgcolor: 'primary.main', height: 160, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                        <Box sx={{ textAlign: 'center', color: 'white' }}>
+                            <Typography variant="h5" fontWeight="900" sx={{ letterSpacing: 2 }}>OFFICIAL DIGITAL IDENTITY</Typography>
+                            <Typography variant="caption" sx={{ opacity: 0.8 }}>NAGAR NIGAM INDORE • GOVERNMENT OF MP</Typography>
+                        </Box>
+                        <IconButton onClick={handleCloseDialog} sx={{ position: 'absolute', top: 16, right: 16, color: 'white', bgcolor: 'rgba(0,0,0,0.2)', '&:hover': { bgcolor: 'rgba(0,0,0,0.4)' } }}>
                             <CloseIcon />
                         </IconButton>
-                        <Box sx={{ position: 'absolute', bottom: -40, left: '50%', transform: 'translateX(-50%)' }}>
+                        <Box sx={{ position: 'absolute', bottom: -50, left: '50%', transform: 'translateX(-50%)' }}>
                             <Avatar
                                 src={selectedEmployee.photoUrl || undefined}
-                                sx={{ width: 100, height: 100, border: 4, borderColor: 'background.paper', boxShadow: 3 }}
+                                sx={{
+                                    width: 120,
+                                    height: 120,
+                                    border: '8px solid white',
+                                    boxShadow: '0 10px 25px rgba(0,0,0,0.1)'
+                                }}
                             />
                         </Box>
                     </Box>
-                    <DialogContent sx={{ pt: 6, pb: 4, textAlign: 'center' }}>
-                        <Typography variant="h5" fontWeight="bold">{selectedEmployee.firstName} {selectedEmployee.lastName}</Typography>
-                        <Typography variant="subtitle1" color="text.secondary" gutterBottom>{selectedEmployee.designation}</Typography>
-                        <Chip label={selectedEmployee.department} color="primary" size="small" sx={{ mb: 3 }} />
 
-                        <Grid container spacing={2} sx={{ textAlign: 'left', mt: 1 }}>
-                            <Grid item xs={12}>
-                                <Box sx={{ display: 'flex', gap: 2, alignItems: 'center', p: 1.5, bgcolor: 'action.hover', borderRadius: 2 }}>
-                                    <CreditCardIcon color="action" />
-                                    <Box>
-                                        <Typography variant="caption" color="text.secondary">Employee ID</Typography>
-                                        <Typography variant="body2" fontWeight="medium">{selectedEmployee.employeeCode}</Typography>
+                    <DialogContent sx={{ pt: 10, pb: 6, textAlign: 'center' }}>
+                        <Typography variant="h4" fontWeight="900" sx={{ color: 'text.primary', mb: 0.5 }}>
+                            {selectedEmployee.firstName} {selectedEmployee.lastName}
+                        </Typography>
+                        <Typography variant="h6" color="primary" sx={{ mb: 1, fontWeight: 700 }}>
+                            {selectedEmployee.designation}
+                        </Typography>
+                        <Chip
+                            label={selectedEmployee.department}
+                            sx={{
+                                borderRadius: 2,
+                                fontWeight: 800,
+                                bgcolor: 'rgba(6, 78, 59, 0.1)',
+                                color: 'primary.main',
+                                border: '1px solid rgba(6, 78, 59, 0.2)',
+                                px: 2,
+                                mb: 4
+                            }}
+                        />
+
+                        <Grid container spacing={2} sx={{ mb: 4 }}>
+                            {[
+                                { icon: <CreditCardIcon />, label: 'Employee ID', value: selectedEmployee.employeeCode },
+                                { icon: <PhoneIcon />, label: 'Phone Number', value: selectedEmployee.contactNumber || 'N/A' },
+                                { icon: <VerifiedIcon />, label: 'Status', value: 'VERIFIED OFFICIAL', color: 'success.main' }
+                            ].map((item, idx) => (
+                                <Grid item xs={12} sm={4} key={idx}>
+                                    <Box sx={{ p: 2, bgcolor: 'white', borderRadius: 3, border: '1px solid', borderColor: 'divider', height: '100%' }}>
+                                        <Box sx={{ color: item.color || 'primary.main', mb: 1 }}>{item.icon}</Box>
+                                        <Typography variant="caption" color="text.secondary" display="block">{item.label}</Typography>
+                                        <Typography variant="body2" fontWeight="bold">{item.value}</Typography>
                                     </Box>
-                                </Box>
-                            </Grid>
-                            <Grid item xs={6}>
-                                <Box sx={{ display: 'flex', gap: 2, alignItems: 'center', p: 1.5, bgcolor: 'action.hover', borderRadius: 2 }}>
-                                    <PhoneIcon color="action" />
-                                    <Box>
-                                        <Typography variant="caption" color="text.secondary">Phone</Typography>
-                                        <Typography variant="body2" fontWeight="medium">{selectedEmployee.contactNumber || 'N/A'}</Typography>
-                                    </Box>
-                                </Box>
-                            </Grid>
-                            <Grid item xs={6}>
-                                <Box sx={{ display: 'flex', gap: 2, alignItems: 'center', p: 1.5, bgcolor: 'action.hover', borderRadius: 2 }}>
-                                    <HomeIcon color="action" />
-                                    <Box>
-                                        <Typography variant="caption" color="text.secondary">Address</Typography>
-                                        <Typography variant="body2" fontWeight="medium" noWrap>{selectedEmployee.address || 'N/A'}</Typography>
-                                    </Box>
-                                </Box>
-                            </Grid>
+                                </Grid>
+                            ))}
                         </Grid>
 
-                        <Box sx={{ mt: 4, p: 2, border: '1px dashed', borderColor: 'divider', borderRadius: 2, display: 'inline-block' }}>
+                        <Box sx={{
+                            p: 3,
+                            bgcolor: 'white',
+                            borderRadius: 4,
+                            border: '2px solid',
+                            borderColor: 'primary.main',
+                            display: 'inline-block',
+                            boxShadow: '0 8px 32px rgba(0,0,0,0.05)'
+                        }}>
                             {qrImages[selectedEmployee.id] && (
-                                <img src={qrImages[selectedEmployee.id]} alt="QR" style={{ width: 120, height: 120 }} />
+                                <img
+                                    src={qrImages[selectedEmployee.id]}
+                                    alt="QR"
+                                    style={{ width: 160, height: 160, display: 'block' }}
+                                />
                             )}
-                            <Typography variant="caption" display="block" color="text.secondary" sx={{ mt: 1 }}>Official Verification QR</Typography>
+                            <Typography variant="overline" display="block" color="primary" sx={{ mt: 1, fontWeight: 900 }}>
+                                Scan for Field Verification
+                            </Typography>
                         </Box>
+
+                        <Typography variant="caption" sx={{ display: 'block', mt: 4, color: 'text.secondary', opacity: 0.7 }}>
+                            Identity generated at {new Date().toLocaleDateString()} • EVMS 2.0 Core
+                        </Typography>
                     </DialogContent>
                 </Dialog>
             )}

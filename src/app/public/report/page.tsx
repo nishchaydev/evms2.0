@@ -1,6 +1,17 @@
 'use client';
 
-import { Box, Button, Container, Typography, Paper, IconButton, Divider, Accordion, AccordionSummary, AccordionDetails } from '@mui/material';
+import {
+    Box,
+    Button,
+    Container,
+    Typography,
+    Paper,
+    IconButton,
+    Divider,
+    Accordion,
+    AccordionSummary,
+    AccordionDetails
+} from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import NoteAddIcon from '@mui/icons-material/NoteAdd';
 import TrackChangesIcon from '@mui/icons-material/TrackChanges';
@@ -11,155 +22,154 @@ import Link from 'next/link';
 
 export default function ReportLandingPage() {
     return (
-        <Box sx={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', bgcolor: 'background.default', alignItems: 'center' }}>
+        <Box sx={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', bgcolor: 'background.default', color: 'text.primary' }}>
 
-            <Container maxWidth="sm" sx={{ p: 0, height: '100%', display: 'flex', flexDirection: 'column', boxShadow: { md: 3 }, borderRadius: { md: 4 }, my: { md: 4 }, overflow: 'hidden', bgcolor: 'background.paper' }}>
-
-                {/* Header */}
-                <Box component="header" sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: 1, borderColor: 'divider', px: 3, py: 2.5, zIndex: 20, bgcolor: 'white' }}>
-                    <IconButton component={Link} href="/" sx={{ color: 'text.primary', bgcolor: 'action.hover' }}>
-                        <ArrowBackIcon />
-                    </IconButton>
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-                        <Box sx={{ width: 40, height: 40, borderRadius: '50%', bgcolor: 'rgba(31, 137, 229, 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'primary.main' }}>
-                            <AccountBalanceIcon sx={{ fontSize: 24 }} />
-                        </Box>
-                        <Box>
-                            <Typography variant="subtitle1" fontWeight="bold" lineHeight={1.2}>Nagar Nigam (IMC)</Typography>
-                            <Typography variant="caption" color="text.secondary">Indore Municipal Corporation</Typography>
-                        </Box>
+            {/* Top Navigation */}
+            <Box component="header" sx={{ position: 'sticky', top: 0, zIndex: 1100, bgcolor: 'background.paper', borderBottom: 2, borderColor: 'divider', px: { xs: 2, md: 5 }, py: 1.5, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <Link href="/" style={{ textDecoration: 'none', color: 'inherit' }}>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                        <AccountBalanceIcon color="primary" sx={{ fontSize: 24 }} />
+                        <Typography variant="subtitle2" sx={{ fontWeight: 800, textTransform: 'uppercase', letterSpacing: 1 }}>Govt. of Madhya Pradesh</Typography>
                     </Box>
-                    <Box sx={{ width: 40 }} />
+                </Link>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+                    <Link href="/login" style={{ textDecoration: 'none' }}>
+                        <Button variant="outlined" color="primary" size="small">
+                            Official Login
+                        </Button>
+                    </Link>
                 </Box>
+            </Box>
 
-                {/* Main Content */}
-                <Box component="main" sx={{ flex: 1, p: 3, display: 'flex', flexDirection: 'column', gap: 4, bgcolor: '#fafafa' }}>
+            {/* Main Content */}
+            <Container maxWidth="md" sx={{ flex: 1, py: { xs: 4, md: 8 }, display: 'flex', flexDirection: 'column', gap: 6 }}>
 
-                    <Box sx={{ textAlign: 'center', py: 3 }}>
-                        <Typography variant="h4" fontWeight="bold" gutterBottom color="#1e293b">Citizen Reporting</Typography>
-                        <Typography variant="body1" color="text.secondary" sx={{ maxWidth: 400, mx: 'auto' }}>
-                            Report issues directly to Nagar Nigam and track their resolution status in real-time.
-                        </Typography>
-                    </Box>
-
-                    {/* Action Cards */}
-                    <Box sx={{ display: 'grid', gap: 2 }}>
-                        <Paper
-                            elevation={0}
-                            component={Link}
-                            href="/public/report/submit"
-                            sx={{
-                                p: 3,
-                                borderRadius: 3,
-                                border: 1,
-                                borderColor: 'divider',
-                                display: 'flex',
-                                gap: 3,
-                                alignItems: 'center',
-                                textDecoration: 'none',
-                                bgcolor: 'white',
-                                transition: 'all 0.2s',
-                                '&:hover': { transform: 'translateY(-4px)', borderColor: 'primary.main', boxShadow: '0 10px 30px -10px rgba(0,0,0,0.1)' }
-                            }}
-                        >
-                            <Box sx={{ width: 64, height: 64, borderRadius: '24px', bgcolor: 'primary.lighter', color: 'primary.main', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                                <NoteAddIcon sx={{ fontSize: 32 }} />
-                            </Box>
-                            <Box sx={{ flex: 1 }}>
-                                <Typography variant="h6" fontWeight="bold" color="text.primary">File New Report</Typography>
-                                <Typography variant="body2" color="text.secondary">Submit a new complaint regarding sanitation, water, or other civic issues.</Typography>
-                            </Box>
-                        </Paper>
-
-                        <Paper
-                            elevation={0}
-                            component={Link}
-                            href="/public/track"
-                            sx={{
-                                p: 3,
-                                borderRadius: 3,
-                                border: 1,
-                                borderColor: 'divider',
-                                display: 'flex',
-                                gap: 3,
-                                alignItems: 'center',
-                                textDecoration: 'none',
-                                bgcolor: 'white',
-                                transition: 'all 0.2s',
-                                '&:hover': { transform: 'translateY(-4px)', borderColor: 'secondary.main', boxShadow: '0 10px 30px -10px rgba(0,0,0,0.1)' }
-                            }}
-                        >
-                            <Box sx={{ width: 64, height: 64, borderRadius: '24px', bgcolor: 'secondary.lighter', color: 'secondary.main', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                                <TrackChangesIcon sx={{ fontSize: 32 }} />
-                            </Box>
-                            <Box sx={{ flex: 1 }}>
-                                <Typography variant="h6" fontWeight="bold" color="text.primary">Track Status</Typography>
-                                <Typography variant="body2" color="text.secondary">Check the progress of your previously submitted complaints.</Typography>
-                            </Box>
-                        </Paper>
-                    </Box>
-
-                    {/* FAQs Section */}
-                    <Box sx={{ py: 2 }}>
-                        <Typography variant="h6" fontWeight="bold" gutterBottom sx={{ px: 1 }}>Frequently Asked Questions</Typography>
-
-                        <Accordion elevation={0} sx={{ border: 1, borderColor: 'divider', mb: 1.5, borderRadius: '12px !important', bgcolor: 'white', '&:before': { display: 'none' } }}>
-                            <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-                                <Typography fontWeight="medium">How do I track my report?</Typography>
-                            </AccordionSummary>
-                            <AccordionDetails>
-                                <Typography variant="body2" color="text.secondary">
-                                    After submitting a report, you will receive a unique Report ID. Go to "Track Status" and enter this ID to see real-time updates.
-                                </Typography>
-                            </AccordionDetails>
-                        </Accordion>
-
-                        <Accordion elevation={0} sx={{ border: 1, borderColor: 'divider', mb: 1.5, borderRadius: '12px !important', bgcolor: 'white', '&:before': { display: 'none' } }}>
-                            <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-                                <Typography fontWeight="medium">Is my identity anonymous?</Typography>
-                            </AccordionSummary>
-                            <AccordionDetails>
-                                <Typography variant="body2" color="text.secondary">
-                                    Yes, your personal details are kept confidential. Only the necessary report details are shared with the assigned officer.
-                                </Typography>
-                            </AccordionDetails>
-                        </Accordion>
-
-                        <Accordion elevation={0} sx={{ border: 1, borderColor: 'divider', mb: 1.5, borderRadius: '12px !important', bgcolor: 'white', '&:before': { display: 'none' } }}>
-                            <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-                                <Typography fontWeight="medium">How long does resolution take?</Typography>
-                            </AccordionSummary>
-                            <AccordionDetails>
-                                <Typography variant="body2" color="text.secondary">
-                                    Most reports are reviewed within 24 hours. Resolution time depends on the complexity, typically 3-5 business days.
-                                </Typography>
-                            </AccordionDetails>
-                        </Accordion>
-                    </Box>
-
-                    {/* Info Section */}
-                    <Box sx={{ mt: 'auto', bgcolor: '#FEF2F2', color: '#991B1B', p: 3, borderRadius: 3, border: 1, borderColor: '#FCA5A5' }}>
-                        <Box sx={{ display: 'flex', gap: 2 }}>
-                            <ReportProblemIcon color="error" />
-                            <Box>
-                                <Typography variant="subtitle2" fontWeight="bold" gutterBottom>Emergency Controls</Typography>
-                                <Typography variant="body2" sx={{ opacity: 0.9, lineHeight: 1.6 }}>
-                                    For life-threatening emergencies (Fire, Major Accidents, Flood control), do not use this app. Call <strong>101</strong> or <strong>108</strong> immediately.
-                                </Typography>
-                            </Box>
-                        </Box>
-                    </Box>
-
-                </Box>
-
-                {/* Footer */}
-                <Box component="footer" sx={{ p: 3, textAlign: 'center', borderTop: 1, borderColor: 'divider', bgcolor: 'white' }}>
-                    <Typography variant="caption" display="block" color="text.disabled">
-                        © 2024 Nagar Nigam (IMC)
+                <Box sx={{ textAlign: { xs: 'center', md: 'left' } }}>
+                    <Typography variant="overline" color="primary">Citizen Grievance</Typography>
+                    <Typography variant="h3" sx={{ fontWeight: 900, mb: 2 }}>Public Reporting Portal</Typography>
+                    <Typography variant="body1" color="text.secondary" sx={{ maxWidth: 600 }}>
+                        Submit issues directly to the Indore Municipal Corporation (IMC). Our transparent system allows you to file reports and track resolution progress in real-time.
                     </Typography>
                 </Box>
 
+                {/* Action Cards */}
+                <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' }, gap: 3 }}>
+                    <Link href="/public/report/submit" style={{ textDecoration: 'none', color: 'inherit' }}>
+                        <Paper
+                            elevation={0}
+                            sx={{
+                                p: 4,
+                                border: 2,
+                                borderColor: 'divider',
+                                display: 'flex',
+                                flexDirection: 'column',
+                                gap: 3,
+                                bgcolor: 'background.paper',
+                                transition: 'all 0.2s',
+                                '&:hover': { borderColor: 'primary.main', bgcolor: 'rgba(5, 150, 105, 0.02)' }
+                            }}
+                        >
+                            <NoteAddIcon color="primary" sx={{ fontSize: 40 }} />
+                            <Box>
+                                <Typography variant="h5" sx={{ fontWeight: 800, color: 'text.primary', mb: 1 }}>FILE NEW REPORT</Typography>
+                                <Typography variant="body2" color="text.secondary">Register a new complaint regarding sanitation, infrastructure, or water issues.</Typography>
+                            </Box>
+                            <Button variant="contained" color="primary" fullWidth sx={{ mt: 'auto' }}>START REPORT</Button>
+                        </Paper>
+                    </Link>
+
+                    <Link href="/public/track" style={{ textDecoration: 'none', color: 'inherit' }}>
+                        <Paper
+                            elevation={0}
+                            sx={{
+                                p: 4,
+                                border: 2,
+                                borderColor: 'divider',
+                                display: 'flex',
+                                flexDirection: 'column',
+                                gap: 3,
+                                bgcolor: 'background.paper',
+                                transition: 'all 0.2s',
+                                '&:hover': { borderColor: 'primary.main', bgcolor: 'rgba(5, 150, 105, 0.02)' }
+                            }}
+                        >
+                            <TrackChangesIcon color="primary" sx={{ fontSize: 40 }} />
+                            <Box>
+                                <Typography variant="h5" sx={{ fontWeight: 800, color: 'text.primary', mb: 1 }}>TRACK STATUS</Typography>
+                                <Typography variant="body2" color="text.secondary">Monitor the progress of your previously submitted official grievances.</Typography>
+                            </Box>
+                            <Button variant="outlined" color="primary" fullWidth sx={{ mt: 'auto' }}>CHECK PROGRESS</Button>
+                        </Paper>
+                    </Link>
+                </Box>
+
+                {/* FAQs Section */}
+                <Box>
+                    <Typography variant="subtitle1" sx={{ fontWeight: 800, mb: 3, textTransform: 'uppercase' }}>Frequently Asked Questions</Typography>
+                    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+                        <Accordion elevation={0} sx={{ border: 1, borderColor: 'divider', '&:before': { display: 'none' } }}>
+                            <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+                                <Typography sx={{ fontWeight: 800 }}>HOW DO I TRACK MY REPORT?</Typography>
+                            </AccordionSummary>
+                            <AccordionDetails>
+                                <Typography variant="body2" color="text.secondary">
+                                    After submission, you will receive a unique Report ID. Use the "Track Status" tool and enter this ID for real-time processing updates.
+                                </Typography>
+                            </AccordionDetails>
+                        </Accordion>
+
+                        <Accordion elevation={0} sx={{ border: 1, borderColor: 'divider', '&:before': { display: 'none' } }}>
+                            <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+                                <Typography sx={{ fontWeight: 800 }}>IS MY IDENTITY PROTECTED?</Typography>
+                            </AccordionSummary>
+                            <AccordionDetails>
+                                <Typography variant="body2" color="text.secondary">
+                                    Yes. Your personal information is encrypted and only used for administrative verification. Officer access is restricted on a need-to-know basis.
+                                </Typography>
+                            </AccordionDetails>
+                        </Accordion>
+
+                        <Accordion elevation={0} sx={{ border: 1, borderColor: 'divider', '&:before': { display: 'none' } }}>
+                            <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+                                <Typography sx={{ fontWeight: 800 }}>WHAT IS THE AVERAGE RESOLUTION TIME?</Typography>
+                            </AccordionSummary>
+                            <AccordionDetails>
+                                <Typography variant="body2" color="text.secondary">
+                                    Reports are acknowledged within 24 hours. Standard civic issues are typically addressed within 3-5 business days depending on priority.
+                                </Typography>
+                            </AccordionDetails>
+                        </Accordion>
+                    </Box>
+                </Box>
+
+                {/* Emergency Section */}
+                <Paper elevation={0} sx={{ p: 4, bgcolor: '#FEF2F2', border: 2, borderColor: '#FCA5A5' }}>
+                    <Box sx={{ display: 'flex', gap: 3, alignItems: 'center' }}>
+                        <ReportProblemIcon sx={{ color: '#991B1B', fontSize: 32 }} />
+                        <Box>
+                            <Typography variant="subtitle1" sx={{ fontWeight: 800, color: '#991B1B', mb: 1, textTransform: 'uppercase' }}>Emergency Protocols</Typography>
+                            <Typography variant="body2" sx={{ color: '#991B1B', fontWeight: 600 }}>
+                                For immediate life-threatening emergencies (Fire, Electrical Hazard, Structural Failure), call 101 or 108 directly. This portal is for non-emergency civic reporting.
+                            </Typography>
+                        </Box>
+                    </Box>
+                </Paper>
+
             </Container>
+
+            {/* Footer */}
+            <Box component="footer" sx={{ mt: 'auto', borderTop: 2, borderColor: 'divider', bgcolor: 'background.paper', py: 4, px: 3 }}>
+                <Container maxWidth={false} sx={{ maxWidth: 1400, display: 'flex', flexDirection: { xs: 'column', md: 'row' }, justifyContent: 'space-between', alignItems: { xs: 'flex-start', md: 'center' }, gap: 2 }}>
+                    <Box>
+                        <Typography variant="h6">EVMS 2.0</Typography>
+                        <Typography variant="caption" color="text.secondary">© 2026 Indore Municipal Corporation. Official Public Service Portal.</Typography>
+                    </Box>
+                    <Box sx={{ display: 'flex', gap: 4 }}>
+                        <Link href="#" style={{ color: 'inherit', textDecoration: 'none', fontWeight: 600, fontSize: '0.875rem' }}>LEGAL</Link>
+                        <Link href="#" style={{ color: 'inherit', textDecoration: 'none', fontWeight: 600, fontSize: '0.875rem' }}>SUPPORT</Link>
+                    </Box>
+                </Container>
+            </Box>
 
         </Box>
     );

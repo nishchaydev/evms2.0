@@ -53,18 +53,31 @@ const StatCard = ({ title, value, icon, bg, color, subText }: { title: string, v
     </Paper>
 );
 
+interface Activity {
+    name: string;
+    type: string;
+    desc: string;
+    status: string;
+    color: 'success' | 'error' | 'warning' | 'info' | 'default';
+    time: string | Date;
+}
+
 interface DashboardProps {
     initialStats: {
         totalEmployees: number;
         activeEmployees: number;
         qrGenerated: number;
         pendingReports: number;
-        barChartData: any[]; // {name, value}
-        pieChartData: any[]; // {name, value}
+        barChartData: { name: string; value: number }[];
+        pieChartData: { name: string; value: number }[];
     };
-    initialActivities: any[];
-    initialReports: any[];
-    initialAnalytics: any;
+    initialActivities: Activity[];
+    initialReports: unknown[]; // Reports are complex, leaving as unknown or referencing Report type if needed
+    initialAnalytics: {
+        statusCounts: { name: string; value: number }[];
+        deptCounts: { name: string; value: number }[];
+        priorityCounts: { name: string; value: number }[];
+    };
 }
 
 import GlassCard from '@/components/ui/GlassCard';
@@ -74,16 +87,18 @@ import GlassCard from '@/components/ui/GlassCard';
 export default function AdminDashboard({ initialStats, initialActivities, initialReports, initialAnalytics }: DashboardProps) {
     // SWR for Real-time Stats (Poll every 10s)
     const { data: stats } = useSWR('dashboard-stats', () => getDashboardStats(), {
-        fallbackData: initialStats,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        fallbackData: initialStats as any,
         refreshInterval: 10000
     });
 
     const { data: analytics } = useSWR('dashboard-analytics', () => getDashboardAnalytics(), {
-        fallbackData: initialAnalytics,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        fallbackData: initialAnalytics as any,
         refreshInterval: 10000
     });
 
-    const [activities, setActivities] = useState<any[]>(initialActivities);
+    const [activities, setActivities] = useState<Activity[]>(initialActivities);
 
     return (
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
@@ -91,7 +106,7 @@ export default function AdminDashboard({ initialStats, initialActivities, initia
             {/* Header */}
             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', flexWrap: 'wrap', gap: 2 }}>
                 <Box>
-                    <Typography variant="h4" fontWeight="bold" sx={{ background: 'linear-gradient(45deg, #2563eb, #7c3aed)', backgroundClip: 'text', textFillColor: 'transparent', width: 'fit-content' }}>
+                    <Typography variant="h4" fontWeight="bold" sx={{ background: 'linear-gradient(45deg, #1e40af, #059669)', backgroundClip: 'text', textFillColor: 'transparent', width: 'fit-content' }}>
                         Dashboard Overview
                     </Typography>
                     <Typography variant="body1" color="text.secondary">Welcome to the Administration Portal</Typography>
@@ -105,7 +120,8 @@ export default function AdminDashboard({ initialStats, initialActivities, initia
             </Box>
 
             {/* Statistics */}
-            <DashboardStats stats={stats} />
+            {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+            <DashboardStats stats={(stats || initialStats) as any} />
 
             <Grid container spacing={4}>
                 {/* Analytics */}
@@ -115,7 +131,7 @@ export default function AdminDashboard({ initialStats, initialActivities, initia
                             <Typography variant="h6" fontWeight="bold">Analytics Overview</Typography>
                         </Box>
                         <Box sx={{ p: 2 }}>
-                            <AnalyticsCharts data={analytics} />
+                            <AnalyticsCharts data={analytics || initialAnalytics} />
                         </Box>
                     </GlassCard>
                 </Grid>
@@ -125,7 +141,7 @@ export default function AdminDashboard({ initialStats, initialActivities, initia
                     <Typography variant="h6" fontWeight="bold" gutterBottom sx={{ px: 1 }}>Quick Actions</Typography>
                     <Grid container spacing={2}>
                         {[{ icon: <PersonAddIcon />, label: 'Add Employee', color: '#1e40af', bg: '#eff6ff', href: '/admin/employees/add' },
-                        { icon: <PlaylistAddIcon />, label: 'Manage Employees', color: '#4338ca', bg: '#e0e7ff', href: '/admin/employees' },
+                        { icon: <PlaylistAddIcon />, label: 'Manage Employees', color: '#1d4ed8', bg: '#eff6ff', href: '/admin/employees' },
                         { icon: <QrCodeScannerIcon />, label: 'ID Cards', color: '#047857', bg: '#ecfdf5', href: '/admin/qr' },
                         { icon: <HistoryEduIcon />, label: 'Reports', color: '#c2410c', bg: '#fff7ed', href: '/admin/reports' }
                         ].map((action, i) => (
@@ -195,7 +211,7 @@ export default function AdminDashboard({ initialStats, initialActivities, initia
                                     activities.map((row, i) => (
                                         <TableRow key={i} hover sx={{ '&:hover': { bgcolor: 'rgba(0,0,0,0.02)' } }}>
                                             <TableCell sx={{ display: 'flex', alignItems: 'center', gap: 2, py: 2 }}>
-                                                <Avatar sx={{ width: 32, height: 32, bgcolor: 'primary.light', color: 'primary.contrastText', fontSize: '0.875rem' }}>{row.name.charAt(0)}</Avatar>
+                                                <Avatar sx={{ width: 32, height: 32, bgcolor: 'primary.light', color: 'primary.contrastText', fontSize: '0.875rem' }}>{row.name ? row.name.charAt(0) : 'S'}</Avatar>
                                                 <Typography variant="body2" fontWeight="medium">{row.name}</Typography>
                                             </TableCell>
                                             <TableCell>
@@ -205,7 +221,7 @@ export default function AdminDashboard({ initialStats, initialActivities, initia
                                                 <Typography variant="body2" color="text.secondary" noWrap sx={{ maxWidth: 200 }}>{row.desc}</Typography>
                                             </TableCell>
                                             <TableCell>
-                                                <Chip label={row.status} size="small" color={row.color as any} variant="outlined" sx={{ fontWeight: 600, height: 24 }} />
+                                                <Chip label={row.status} size="small" color={row.color} variant="outlined" sx={{ fontWeight: 600, height: 24 }} />
                                             </TableCell>
                                             <TableCell align="right">
                                                 <Typography variant="caption" color="text.secondary" sx={{ fontFamily: 'monospace' }}>

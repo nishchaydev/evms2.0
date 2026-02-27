@@ -34,6 +34,10 @@ import { getEmployeeById, addEducation, addExperience, addRecruitment, deleteExp
 import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 
+import ServiceBookPreview from '@/components/ServiceBookPreview';
+import DigitalIDModal from '@/components/DigitalIDModal';
+import { Employee, Experience, Education, Recruitment } from '@/types/employee';
+
 function TabPanel(props: { children?: React.ReactNode; index: number; value: number }) {
     const { children, value, index, ...other } = props;
     return (
@@ -192,9 +196,11 @@ export default function EmployeeDetailsPage() {
     const router = useRouter();
 
     const [loading, setLoading] = useState(true);
-    const [employee, setEmployee] = useState<any>(null);
+    const [employee, setEmployee] = useState<Employee | null>(null);
     const [error, setError] = useState<string | null>(null);
     const [tabValue, setTabValue] = useState(0);
+    const [serviceBookOpen, setServiceBookOpen] = useState(false);
+    const [digitalIDOpen, setDigitalIDOpen] = useState(false);
 
     useEffect(() => {
         const fetchEmployee = async () => {
@@ -202,7 +208,7 @@ export default function EmployeeDetailsPage() {
             try {
                 const data = await getEmployeeById(id);
                 if (data) {
-                    setEmployee(data);
+                    setEmployee(data as unknown as Employee);
                 } else {
                     setError('Employee not found');
                 }
@@ -241,16 +247,36 @@ export default function EmployeeDetailsPage() {
 
                 <Box sx={{ display: 'flex', flexDirection: { xs: 'column', md: 'row' }, gap: 3, alignItems: { xs: 'center', md: 'flex-start' } }}>
                     <Avatar
-                        src={employee.photoUrl}
-                        sx={{ width: 120, height: 120, border: '4px solid white', boxShadow: 2, fontSize: 40, bgcolor: 'primary.light', color: 'primary.main' }}
+                        src={employee.photoUrl || undefined}
+                        sx={{
+                            width: 140,
+                            height: 140,
+                            border: '6px solid white',
+                            boxShadow: '8px 8px 0px 0px rgba(6, 78, 59, 0.2)',
+                            fontSize: 48,
+                            bgcolor: 'primary.light',
+                            color: 'primary.contrastText',
+                            borderRadius: (theme) => theme.shape.borderRadius // Respect theme but bigger
+                        }}
                     >
                         {employee.firstName?.[0]}{employee.lastName?.[0]}
                     </Avatar>
 
                     <Box sx={{ flex: 1, textAlign: { xs: 'center', md: 'left' } }}>
                         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 1, justifyContent: { xs: 'center', md: 'flex-start' } }}>
-                            <Typography variant="h4" fontWeight="bold">{employee.firstName} {employee.lastName}</Typography>
-                            <Chip label={employee.status} color="success" size="small" sx={{ borderRadius: 1, fontWeight: 'bold', bgcolor: 'success.lighter', color: 'success.dark' }} />
+                            <Typography variant="h3" fontWeight="900" sx={{ textTransform: 'uppercase' }}>{employee.firstName} {employee.lastName}</Typography>
+                            <Chip
+                                label={employee.status}
+                                size="small"
+                                sx={{
+                                    borderRadius: 0,
+                                    fontWeight: '900',
+                                    bgcolor: 'success.main',
+                                    color: 'white',
+                                    height: 24,
+                                    fontSize: '0.7rem'
+                                }}
+                            />
                         </Box>
 
                         <Typography variant="h6" color="primary" gutterBottom>{employee.designation}</Typography>
@@ -270,20 +296,30 @@ export default function EmployeeDetailsPage() {
                         </Box>
                     </Box>
 
-                    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+                    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
                         <Button
                             variant="contained"
                             startIcon={<EditIcon />}
                             component={Link}
                             href={`/admin/employees/${employee.id}/edit`}
-                            sx={{ borderRadius: 2, textTransform: 'none', fontWeight: 600, px: 3 }}
+                            sx={{ fontWeight: 800, px: 3, boxShadow: '4px 4px 0px 0px #022C22' }}
                         >
                             Edit Profile
                         </Button>
-                        <Button variant="outlined" startIcon={<DownloadIcon />} sx={{ borderRadius: 2, textTransform: 'none', fontWeight: 600 }}>
+                        <Button
+                            variant="outlined"
+                            startIcon={<DownloadIcon />}
+                            onClick={() => setServiceBookOpen(true)}
+                            sx={{ fontWeight: 800, border: '3px solid' }}
+                        >
                             Service Book
                         </Button>
-                        <Button variant="outlined" startIcon={<QrCodeIcon />} component={Link} href={`/verify/${employee.qr?.token}`} target="_blank" sx={{ borderRadius: 2, textTransform: 'none', fontWeight: 600 }}>
+                        <Button
+                            variant="outlined"
+                            startIcon={<QrCodeIcon />}
+                            onClick={() => setDigitalIDOpen(true)}
+                            sx={{ fontWeight: 800, border: '3px solid' }}
+                        >
                             Digital ID
                         </Button>
                     </Box>
@@ -411,7 +447,7 @@ export default function EmployeeDetailsPage() {
 
                     {employee.experiences && employee.experiences.length > 0 ? (
                         <Box sx={{ position: 'relative', pl: 2, '&::before': { content: '""', position: 'absolute', left: 0, top: 8, bottom: 0, width: 2, bgcolor: 'divider' } }}>
-                            {employee.experiences.map((exp: any) => (
+                            {employee.experiences.map((exp: Experience) => (
                                 <TimelineItem
                                     key={exp.id}
                                     title={exp.designation}
@@ -436,7 +472,7 @@ export default function EmployeeDetailsPage() {
                     <AddEducationForm employeeId={employee.id} onSuccess={() => window.location.reload()} />
 
                     {employee.education && employee.education.length > 0 ? (
-                        employee.education.map((edu: any) => (
+                        employee.education.map((edu: Education) => (
                             <Paper key={edu.id} elevation={0} sx={{ p: 3, mb: 2, borderRadius: 3, border: 1, borderColor: 'divider', position: 'relative' }}>
                                 <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                                     <Box>
@@ -459,7 +495,7 @@ export default function EmployeeDetailsPage() {
                     <AddRecruitmentForm employeeId={employee.id} onSuccess={() => window.location.reload()} />
 
                     {employee.recruitments && employee.recruitments.length > 0 ? (
-                        employee.recruitments.map((rec: any) => (
+                        employee.recruitments.map((rec: Recruitment) => (
                             <Paper key={rec.id} elevation={0} sx={{ p: 3, mb: 2, borderRadius: 3, border: 1, borderColor: 'divider', position: 'relative' }}>
                                 <IconButton
                                     size="small"
@@ -509,10 +545,25 @@ export default function EmployeeDetailsPage() {
 
 function InfoCard({ title, children, onEdit }: { title: string, children: React.ReactNode, onEdit?: () => void }) {
     return (
-        <Paper elevation={0} sx={{ p: 3, borderRadius: 3, border: 1, borderColor: 'divider', height: '100%' }}>
+        <Paper
+            elevation={0}
+            sx={{
+                p: 3,
+                borderRadius: 0,
+                border: '2px solid',
+                borderColor: 'primary.main',
+                height: '100%',
+                position: 'relative',
+                transition: 'transform 0.2s',
+                '&:hover': {
+                    transform: 'translate(-4px, -4px)',
+                    boxShadow: '12px 12px 0px 0px #064E3B'
+                }
+            }}
+        >
             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-                <Typography variant="subtitle2" color="primary" fontWeight="bold" sx={{ letterSpacing: 1 }}>{title}</Typography>
-                {onEdit && <IconButton size="small" onClick={onEdit}><EditIcon fontSize="small" /></IconButton>}
+                <Typography variant="overline" color="primary" sx={{ letterSpacing: 2 }}>{title}</Typography>
+                {onEdit && <IconButton size="small" onClick={onEdit} sx={{ bgcolor: 'rgba(0,0,0,0.05)' }}><EditIcon fontSize="small" /></IconButton>}
             </Box>
             {children}
         </Paper>

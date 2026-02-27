@@ -240,7 +240,7 @@ export default function EmployeeForm({ onSubmit }: EmployeeFormProps) {
                                                 <TextField name="lastName" required fullWidth placeholder="Enter last name" size="small" InputProps={{ sx: { borderRadius: 2 } }} />
                                             </Grid>
                                             <Grid item xs={12} sm={6}>
-                                                <Typography variant="body2" fontWeight="bold" mb={0.5}>Father's Name</Typography>
+                                                <Typography variant="body2" fontWeight="bold" mb={0.5}>Father&apos;s Name</Typography>
                                                 <TextField name="fatherName" fullWidth placeholder="Enter father's name" size="small" InputProps={{ sx: { borderRadius: 2 } }} />
                                             </Grid>
                                             <Grid item xs={12} sm={6}>

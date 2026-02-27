@@ -12,7 +12,6 @@ import {
     CircularProgress,
     IconButton
 } from '@mui/material';
-import VerifiedUserIcon from '@mui/icons-material/VerifiedUser';
 import AccountBalanceIcon from '@mui/icons-material/AccountBalance';
 import PersonIcon from '@mui/icons-material/Person';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
@@ -21,10 +20,12 @@ import LoginIcon from '@mui/icons-material/Login';
 import LockClockIcon from '@mui/icons-material/LockClock';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-
 import Link from 'next/link';
+import { useColorMode } from '@/theme/ThemeContext';
 
 export default function LoginPage() {
+    const { mode } = useColorMode();
+    const isLight = mode === 'light';
     const router = useRouter();
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
@@ -50,10 +51,9 @@ export default function LoginPage() {
                 throw new Error(data.error || 'Login failed');
             }
 
-            // Success - Redirect based on response
             if (data.redirect) {
                 router.push(data.redirect);
-                router.refresh(); // Ensure middleware picks up the cookie
+                router.refresh();
             } else {
                 router.push('/');
             }
@@ -67,45 +67,44 @@ export default function LoginPage() {
     return (
         <Box sx={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', bgcolor: 'background.default', color: 'text.primary' }}>
 
-            {/* Header */}
-            <Box component="header" sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: 1, borderColor: 'divider', px: { xs: 2, md: 5 }, py: 2, bgcolor: 'background.paper' }}>
+            {/* Header - Official Style */}
+            <Box component="header" sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: 2, borderColor: 'divider', px: { xs: 2, md: 5 }, py: 2, bgcolor: 'background.paper' }}>
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                    <Box sx={{ color: 'primary.main', display: 'flex' }}>
-                        <VerifiedUserIcon sx={{ fontSize: { xs: 28, md: 32 } }} />
-                    </Box>
-                    <Typography variant="subtitle1" fontWeight="bold" sx={{ fontSize: { xs: '0.9rem', md: '1rem' } }}>Digital Employee Verification System</Typography>
+                    <AccountBalanceIcon color="primary" sx={{ fontSize: { xs: 28, md: 32 } }} />
+                    <Typography variant="subtitle2" sx={{ fontWeight: 800, textTransform: 'uppercase', letterSpacing: 1.5 }}>
+                        Govt. of Madhya Pradesh
+                    </Typography>
                 </Box>
                 <Box sx={{ display: { xs: 'none', md: 'flex' }, gap: 4 }}>
-                    <MuiLink href="#" underline="hover" color="text.primary" fontWeight={500}>Help</MuiLink>
-                    <MuiLink href="#" underline="hover" color="text.primary" fontWeight={500}>Contact</MuiLink>
+                    <Link href="/" style={{ textDecoration: 'none' }}>
+                        <MuiLink sx={{ color: 'text.primary', fontWeight: 700, fontSize: '0.875rem' }}>BACK TO HOME</MuiLink>
+                    </Link>
                 </Box>
             </Box>
 
             {/* Main Content */}
             <Box component="main" sx={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', p: { xs: 2, md: 3 } }}>
-                <Paper elevation={3} sx={{ width: '100%', maxWidth: { xs: '100%', sm: 440 }, borderRadius: 3, border: 1, borderColor: 'divider', overflow: 'hidden' }}>
+                <Paper elevation={0} sx={{ width: '100%', maxWidth: 440, border: 2, borderColor: 'divider' }}>
 
                     {/* Card Header */}
-                    <Box sx={{ pt: 4, pb: { xs: 0, md: 2 }, px: { xs: 2, md: 4 }, textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                        <Box sx={{ width: 64, height: 64, borderRadius: '50%', bgcolor: 'primary.light', display: 'flex', alignItems: 'center', justifyContent: 'center', mb: 2, color: 'primary.main', opacity: 0.2 }}>
-                        </Box>
-                        <Box sx={{ width: 64, height: 64, borderRadius: '50%', bgcolor: 'transparent', display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'absolute', mt: 0 }}>
-                            <AccountBalanceIcon sx={{ fontSize: 40, color: 'primary.main' }} />
+                    <Box sx={{ pt: 6, pb: 2, px: 4, textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                        <Box sx={{ width: 80, height: 80, bgcolor: 'primary.main', display: 'flex', alignItems: 'center', justifyContent: 'center', mb: 3, color: '#fff' }}>
+                            <AccountBalanceIcon sx={{ fontSize: 40 }} />
                         </Box>
 
-                        <Typography variant="h5" fontWeight="bold" gutterBottom mt={1} sx={{ fontSize: { xs: '1.25rem', md: '1.5rem' } }}>Officer / Admin Login</Typography>
-                        <Typography variant="body2" color="text.secondary">Secure access for Nagar Nigam (IMC) staff</Typography>
+                        <Typography variant="h5" sx={{ fontWeight: 900, mb: 1, textTransform: 'uppercase' }}>Officer Login</Typography>
+                        <Typography variant="body2" color="text.secondary" sx={{ fontWeight: 500 }}>Secure access for Nagar Nigam Indore (IMC)</Typography>
                     </Box>
 
                     {/* Form */}
-                    <Box component="form" onSubmit={handleLogin} sx={{ p: { xs: 3, md: 4 }, display: 'flex', flexDirection: 'column', gap: 3 }}>
+                    <Box component="form" onSubmit={handleLogin} sx={{ p: 4, display: 'flex', flexDirection: 'column', gap: 3 }}>
 
                         {error && (
-                            <Alert severity="error" sx={{ borderRadius: 2 }}>{error}</Alert>
+                            <Alert severity="error" sx={{ borderRadius: 0, fontWeight: 700 }}>{error}</Alert>
                         )}
 
                         <Box>
-                            <Typography variant="body2" fontWeight="bold" gutterBottom>Username</Typography>
+                            <Typography variant="caption" sx={{ fontWeight: 800, letterSpacing: 1, mb: 1, display: 'block', textTransform: 'uppercase' }}>Username</Typography>
                             <TextField
                                 fullWidth
                                 placeholder="Enter your username"
@@ -115,18 +114,15 @@ export default function LoginPage() {
                                 InputProps={{
                                     startAdornment: (
                                         <InputAdornment position="start">
-                                            <PersonIcon color="action" />
+                                            <PersonIcon color="primary" />
                                         </InputAdornment>
                                     ),
-                                    sx: { borderRadius: 2, bgcolor: 'background.default' }
                                 }}
                             />
                         </Box>
 
                         <Box>
-                            <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 0.5 }}>
-                                <Typography variant="body2" fontWeight="bold">Password</Typography>
-                            </Box>
+                            <Typography variant="caption" sx={{ fontWeight: 800, letterSpacing: 1, mb: 1, display: 'block', textTransform: 'uppercase' }}>Password</Typography>
                             <TextField
                                 fullWidth
                                 type={showPassword ? 'text' : 'password'}
@@ -142,39 +138,40 @@ export default function LoginPage() {
                                             </IconButton>
                                         </InputAdornment>
                                     ),
-                                    sx: { borderRadius: 2, bgcolor: 'background.default' }
                                 }}
                             />
                             <Box sx={{ mt: 1, textAlign: 'right' }}>
-                                <MuiLink component={Link} href="/forgot-password" underline="hover" color="primary" variant="body2" fontWeight={600}>Forgot Password?</MuiLink>
+                                <Link href="/forgot-password" style={{ textDecoration: 'none' }}>
+                                    <MuiLink sx={{ color: 'primary.main', fontWeight: 800, fontSize: '0.75rem', letterSpacing: 0.5 }}>FORGOT PASSWORD?</MuiLink>
+                                </Link>
                             </Box>
                         </Box>
 
                         <Button
                             type="submit"
                             variant="contained"
+                            color="primary"
                             size="large"
                             fullWidth
                             disabled={loading}
                             startIcon={loading ? <CircularProgress size={20} color="inherit" /> : <LoginIcon />}
-                            sx={{ mt: 1, borderRadius: 2, height: 48, fontWeight: 700, textTransform: 'none', fontSize: 16 }}
+                            sx={{ mt: 2, height: 56 }}
                         >
-                            {loading ? 'Logging in...' : 'Login'}
+                            {loading ? 'Logging in...' : 'Official Login'}
                         </Button>
 
-                        <Alert severity="info" icon={<LockClockIcon fontSize="inherit" />} sx={{ borderRadius: 2, bgcolor: 'rgb(239, 246, 255)', color: 'text.secondary', border: '1px solid rgb(219, 234, 254)' }}>
-                            For security purposes, you may be asked to verify your identity.
+                        <Alert severity="info" icon={<LockClockIcon fontSize="inherit" />} sx={{ borderRadius: 0, mt: 2, bgcolor: isLight ? 'rgba(59, 130, 246, 0.05)' : 'rgba(59, 130, 246, 0.1)', color: 'text.secondary', border: '1px solid rgba(59, 130, 246, 0.2)' }}>
+                            For security purposes, you may be asked for location verification.
                         </Alert>
 
                     </Box>
-
                 </Paper>
             </Box>
 
             {/* Footer */}
-            <Box component="footer" sx={{ py: 3, textAlign: 'center' }}>
-                <Typography variant="caption" color="text.secondary" display="block" gutterBottom>
-                    © 2024 Nagar Nigam (IMC). All rights reserved.
+            <Box component="footer" sx={{ borderTop: 2, borderColor: 'divider', py: 4, textAlign: 'center', bgcolor: 'background.paper' }}>
+                <Typography variant="caption" sx={{ color: 'text.secondary', fontWeight: 600 }}>
+                    © 2026 Indore Municipal Corporation (IMC). Official Release.
                 </Typography>
             </Box>
 

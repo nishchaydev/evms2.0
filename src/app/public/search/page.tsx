@@ -31,9 +31,7 @@ import { searchEmployees } from '@/lib/search-actions';
 import { useRouter } from 'next/navigation';
 import { DEPARTMENTS, DESIGNATIONS } from '@/lib/constants';
 import PageTransition from '@/components/ui/PageTransition';
-import GlassCard from '@/components/ui/GlassCard';
 
-// Interface for search results
 interface EmployeeResult {
     id: string;
     firstName: string;
@@ -46,7 +44,6 @@ interface EmployeeResult {
 }
 
 export default function PublicSearchPage() {
-    // Optional: Filter or sort these if needed, or just use them directly
     const departments = DEPARTMENTS;
     const roles = DESIGNATIONS;
 
@@ -80,17 +77,19 @@ export default function PublicSearchPage() {
         <Box sx={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', bgcolor: 'background.default', color: 'text.primary' }}>
 
             {/* Top Navigation */}
-            <Box component="header" sx={{ position: 'sticky', top: 0, zIndex: 1100, bgcolor: 'background.paper', borderBottom: 1, borderColor: 'divider', px: { xs: 2, md: 5 }, py: 1.5, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <Box component={Link} href="/" sx={{ display: 'flex', alignItems: 'center', gap: 2, textDecoration: 'none', color: 'inherit' }}>
-                    <Box sx={{ width: 32, height: 32, borderRadius: '50%', bgcolor: 'primary.main', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white' }}>
-                        <AccountBalanceIcon sx={{ fontSize: 20 }} />
+            <Box component="header" sx={{ position: 'sticky', top: 0, zIndex: 1100, bgcolor: 'background.paper', borderBottom: 2, borderColor: 'divider', px: { xs: 2, md: 5 }, py: 1.5, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <Link href="/" style={{ textDecoration: 'none', color: 'inherit' }}>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                        <AccountBalanceIcon color="primary" sx={{ fontSize: 24 }} />
+                        <Typography variant="subtitle2" sx={{ fontWeight: 800, textTransform: 'uppercase', letterSpacing: 1 }}>Govt. of Madhya Pradesh</Typography>
                     </Box>
-                    <Typography variant="subtitle1" fontWeight="bold">IMC Verification Portal</Typography>
-                </Box>
+                </Link>
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-                    <Button component={Link} href="/login" variant="contained" size="small" sx={{ borderRadius: 2, textTransform: 'none', fontWeight: 700 }}>
-                        Officer Login
-                    </Button>
+                    <Link href="/login" style={{ textDecoration: 'none' }}>
+                        <Button variant="outlined" color="primary" size="small">
+                            Official Login
+                        </Button>
+                    </Link>
                 </Box>
             </Box>
 
@@ -100,62 +99,58 @@ export default function PublicSearchPage() {
                 <PageTransition>
                     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
                         {/* Page Heading */}
-                        <Box sx={{ textAlign: { xs: 'center', md: 'left' }, px: { xs: 1, md: 2 } }}>
-                            <Typography variant="h4" fontWeight="bold" gutterBottom>Public Employee Verification</Typography>
-                            <Typography variant="body1" color="text.secondary" sx={{ maxWidth: 600, mx: { xs: 'auto', md: 0 } }}>
-                                Search to verify whether an employee is legitimate. Access the official Nagar Nigam database to ensure transparency and trust.
+                        <Box sx={{ textAlign: { xs: 'center', md: 'left' } }}>
+                            <Typography variant="overline" color="primary">Employee Registry</Typography>
+                            <Typography variant="h3" sx={{ fontWeight: 900, mb: 2 }}>Public Verification</Typography>
+                            <Typography variant="body1" color="text.secondary" sx={{ maxWidth: 600 }}>
+                                Search the official Nagar Nigam Indore personnel database to verify employee credentials and ensure administrative transparency.
                             </Typography>
                         </Box>
 
                         {/* Search Card */}
-                        <GlassCard sx={{ p: { xs: 2, md: 4 } }}>
+                        <Paper elevation={0} sx={{ p: { xs: 3, md: 5 }, border: 2, borderColor: 'divider' }}>
                             <Box component="form" sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
 
-                                {/* Search Input */}
                                 <Box>
-                                    <Typography variant="subtitle2" fontWeight="bold" gutterBottom>Search Employee</Typography>
+                                    <Typography variant="caption" sx={{ fontWeight: 800, textTransform: 'uppercase', letterSpacing: 1, mb: 1, display: 'block' }}>Search Employee</Typography>
                                     <TextField
                                         fullWidth
-                                        placeholder="Enter Name or Employee ID (e.g., NN-2024-890)"
+                                        placeholder="Name or Employee ID (e.g., NN-2024-890)"
                                         value={query}
                                         onChange={(e) => setQuery(e.target.value)}
                                         InputProps={{
                                             startAdornment: (
                                                 <InputAdornment position="start">
-                                                    <SearchIcon color="action" />
+                                                    <SearchIcon color="primary" />
                                                 </InputAdornment>
                                             ),
-                                            sx: { borderRadius: 2, bgcolor: 'background.default' }
                                         }}
                                         variant="outlined"
                                     />
                                 </Box>
 
-                                {/* Filters Row */}
                                 <Grid container spacing={2}>
                                     <Grid item xs={12} md={6}>
-                                        <Typography variant="subtitle2" fontWeight="bold" gutterBottom>Department</Typography>
+                                        <Typography variant="caption" sx={{ fontWeight: 800, textTransform: 'uppercase', letterSpacing: 1, mb: 1, display: 'block' }}>Department</Typography>
                                         <TextField
                                             select
                                             fullWidth
                                             value={department}
                                             onChange={(e) => setDepartment(e.target.value)}
                                             variant="outlined"
-                                            InputProps={{ sx: { borderRadius: 2, bgcolor: 'background.default' } }}
                                         >
                                             <MenuItem value="">Any Department</MenuItem>
                                             {departments.map((dept) => <MenuItem key={dept} value={dept}>{dept}</MenuItem>)}
                                         </TextField>
                                     </Grid>
                                     <Grid item xs={12} md={6}>
-                                        <Typography variant="subtitle2" fontWeight="bold" gutterBottom>Role</Typography>
+                                        <Typography variant="caption" sx={{ fontWeight: 800, textTransform: 'uppercase', letterSpacing: 1, mb: 1, display: 'block' }}>Role</Typography>
                                         <TextField
                                             select
                                             fullWidth
                                             value={role}
                                             onChange={(e) => setRole(e.target.value)}
                                             variant="outlined"
-                                            InputProps={{ sx: { borderRadius: 2, bgcolor: 'background.default' } }}
                                         >
                                             <MenuItem value="">Any Role</MenuItem>
                                             {roles.map((r) => <MenuItem key={r} value={r}>{r}</MenuItem>)}
@@ -163,46 +158,44 @@ export default function PublicSearchPage() {
                                     </Grid>
                                 </Grid>
 
-                                {/* Action Button */}
-                                <Box sx={{ display: 'flex', justifyContent: { xs: 'stretch', md: 'flex-end' }, pt: 1 }}>
+                                <Box sx={{ display: 'flex', justifyContent: 'flex-end', pt: 1 }}>
                                     <Button
                                         variant="contained"
+                                        color="primary"
                                         size="large"
                                         startIcon={loading ? <CircularProgress size={20} color="inherit" /> : <SearchIcon />}
                                         onClick={handleSearch}
                                         disabled={loading}
-                                        sx={{ borderRadius: 2, px: 4, py: 1.5, fontWeight: 700, textTransform: 'none' }}
+                                        sx={{ minWidth: 200, height: 56 }}
                                     >
                                         {loading ? 'Searching...' : 'Search Records'}
                                     </Button>
                                 </Box>
 
                             </Box>
-                        </GlassCard>
+                        </Paper>
 
                         {/* Results Section */}
                         {results && (
                             <Box>
-                                <Typography variant="h6" fontWeight="bold" gutterBottom sx={{ px: 1 }}>Search Results ({results.length})</Typography>
+                                <Typography variant="subtitle1" sx={{ fontWeight: 800, mb: 2, px: 1 }}>RESULTS ({results.length})</Typography>
                                 {results.length === 0 ? (
-                                    <Box sx={{ py: 6, px: 2, textAlign: 'center', border: '2px dashed', borderColor: 'divider', borderRadius: 3, bgcolor: 'rgba(255,255,255,0.5)' }}>
-                                        <Box sx={{ width: 64, height: 64, borderRadius: '50%', bgcolor: 'action.hover', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', mb: 2 }}>
-                                            <ManageSearchIcon sx={{ fontSize: 32, color: 'text.secondary' }} />
-                                        </Box>
-                                        <Typography variant="h6" fontWeight="500" gutterBottom>No employees found</Typography>
-                                        <Typography variant="body2" color="text.secondary" sx={{ maxWidth: 400, mx: 'auto' }}>
-                                            We couldn't find any match for your search criteria. Please try checking the spelling or Employee ID.
+                                    <Paper elevation={0} sx={{ py: 8, px: 2, textAlign: 'center', borderStyle: 'dashed', borderWidth: 2, borderColor: 'divider', bgcolor: 'transparent' }}>
+                                        <ManageSearchIcon sx={{ fontSize: 48, color: 'text.secondary', mb: 2, opacity: 0.5 }} />
+                                        <Typography variant="h6" sx={{ fontWeight: 700 }}>No employees found</Typography>
+                                        <Typography variant="body2" color="text.secondary" sx={{ maxWidth: 400, mx: 'auto', mt: 1 }}>
+                                            We couldn't find matches for "{query}". Please check the spelling or Official Employee ID.
                                         </Typography>
-                                    </Box>
+                                    </Paper>
                                 ) : (
-                                    <GlassCard sx={{ overflow: 'hidden', p: 0 }}>
+                                    <Paper elevation={0} sx={{ overflow: 'hidden', border: 2, borderColor: 'divider' }}>
                                         <TableContainer>
                                             <Table>
-                                                <TableHead sx={{ bgcolor: 'action.hover' }}>
+                                                <TableHead>
                                                     <TableRow>
-                                                        <TableCell sx={{ fontWeight: 'bold' }}>Employee Name</TableCell>
-                                                        <TableCell sx={{ fontWeight: 'bold' }}>Department</TableCell>
-                                                        <TableCell sx={{ fontWeight: 'bold' }}>Status</TableCell>
+                                                        <TableCell>Employee Name</TableCell>
+                                                        <TableCell>Designation</TableCell>
+                                                        <TableCell align="right">Status</TableCell>
                                                     </TableRow>
                                                 </TableHead>
                                                 <TableBody>
@@ -215,54 +208,55 @@ export default function PublicSearchPage() {
                                                         >
                                                             <TableCell>
                                                                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                                                                    <Avatar sx={{ bgcolor: 'primary.main' }}>{emp.firstName?.[0]}{emp.lastName?.[0]}</Avatar>
+                                                                    <Avatar sx={{ bgcolor: 'primary.main', borderRadius: 0, fontWeight: 800 }}>{emp.firstName?.[0]}{emp.lastName?.[0]}</Avatar>
                                                                     <Box>
-                                                                        <Typography variant="subtitle2" fontWeight="bold">{emp.firstName} {emp.lastName}</Typography>
-                                                                        <Typography variant="caption" color="text.secondary" sx={{ fontFamily: 'monospace' }}>{emp.employeeCode}</Typography>
+                                                                        <Typography variant="subtitle2" sx={{ fontWeight: 800 }}>{emp.firstName} {emp.lastName}</Typography>
+                                                                        <Typography variant="caption" color="text.secondary" sx={{ fontFamily: 'monospace', fontWeight: 700 }}>{emp.employeeCode}</Typography>
                                                                     </Box>
                                                                 </Box>
                                                             </TableCell>
                                                             <TableCell>
-                                                                <Typography variant="body2">{emp.designation}</Typography>
-                                                                <Typography variant="caption" color="text.secondary">{emp.department}</Typography>
+                                                                <Typography variant="body2" sx={{ fontWeight: 600 }}>{emp.designation}</Typography>
+                                                                <Typography variant="caption" color="text.secondary" sx={{ fontWeight: 500 }}>{emp.department}</Typography>
                                                             </TableCell>
-                                                            <TableCell>
-                                                                <Chip label={emp.status} size="small" color={emp.status === 'ACTIVE' ? 'success' : 'default'} />
+                                                            <TableCell align="right">
+                                                                <Chip
+                                                                    label={emp.status}
+                                                                    size="small"
+                                                                    sx={{ borderRadius: 0, fontWeight: 800 }}
+                                                                    color={emp.status === 'ACTIVE' ? 'success' : 'default'}
+                                                                />
                                                             </TableCell>
                                                         </TableRow>
                                                     ))}
                                                 </TableBody>
                                             </Table>
                                         </TableContainer>
-                                    </GlassCard>
+                                    </Paper>
                                 )}
                             </Box>
                         )}
 
-                        {/* Info Cards (Only show if no results yet) */}
+                        {/* Info Cards */}
                         {!results && (
-                            <Grid container spacing={2}>
+                            <Grid container spacing={3}>
                                 <Grid item xs={12} md={6}>
-                                    <GlassCard sx={{ p: 2.5, display: 'flex', gap: 2, alignItems: 'flex-start' }} hoverEffect={false}>
-                                        <Box sx={{ p: 1, borderRadius: 1, bgcolor: '#eff6ff', color: 'primary.main' }}>
-                                            <VerifiedUserIcon />
-                                        </Box>
+                                    <Paper elevation={0} sx={{ p: 4, display: 'flex', gap: 3, alignItems: 'flex-start', border: 2, borderColor: 'divider' }}>
+                                        <VerifiedUserIcon color="primary" sx={{ fontSize: 32 }} />
                                         <Box>
-                                            <Typography variant="subtitle1" fontWeight="bold">Official Verification</Typography>
-                                            <Typography variant="body2" color="text.secondary">All data is sourced directly from the official government personnel registry for accuracy.</Typography>
+                                            <Typography variant="subtitle1" sx={{ fontWeight: 800, mb: 1 }}>OFFICIAL REGISTRY</Typography>
+                                            <Typography variant="body2" color="text.secondary">Direct access to the secure government employee record system for real-time verification.</Typography>
                                         </Box>
-                                    </GlassCard>
+                                    </Paper>
                                 </Grid>
                                 <Grid item xs={12} md={6}>
-                                    <GlassCard sx={{ p: 2.5, display: 'flex', gap: 2, alignItems: 'flex-start' }} hoverEffect={false}>
-                                        <Box sx={{ p: 1, borderRadius: 1, bgcolor: '#eff6ff', color: 'primary.main' }}>
-                                            <ReportProblemIcon />
-                                        </Box>
+                                    <Paper elevation={0} sx={{ p: 4, display: 'flex', gap: 3, alignItems: 'flex-start', border: 2, borderColor: 'divider' }}>
+                                        <ReportProblemIcon color="secondary" sx={{ fontSize: 32 }} />
                                         <Box>
-                                            <Typography variant="subtitle1" fontWeight="bold">Report Issues</Typography>
-                                            <Typography variant="body2" color="text.secondary">If you suspect fraudulent activity or cannot find an employee, please contact the helpdesk.</Typography>
+                                            <Typography variant="subtitle1" sx={{ fontWeight: 800, mb: 1 }}>REPORT FRAUD</Typography>
+                                            <Typography variant="body2" color="text.secondary">If you suspect an individual is impersonating a government official, use our secure reporting tool.</Typography>
                                         </Box>
-                                    </GlassCard>
+                                    </Paper>
                                 </Grid>
                             </Grid>
                         )}
@@ -272,16 +266,17 @@ export default function PublicSearchPage() {
             </Container>
 
             {/* Footer */}
-            <Box component="footer" sx={{ mt: 'auto', borderTop: 1, borderColor: 'divider', bgcolor: 'background.paper', py: 3, px: { xs: 2, md: 5 } }}>
-                <Box sx={{ maxWidth: 960, mx: 'auto', display: 'flex', flexDirection: { xs: 'column', md: 'row' }, justifyContent: 'space-between', alignItems: 'center', gap: 2 }}>
-                    <Typography variant="body2" color="text.secondary">
-                        © 2024 Nagar Nigam (IMC). All rights reserved.
-                    </Typography>
-                    <Box sx={{ display: 'flex', gap: 3 }}>
-                        <Typography component={Link} href="#" variant="body2" color="text.secondary" sx={{ textDecoration: 'none', '&:hover': { color: 'primary.main' } }}>Privacy Policy</Typography>
-                        <Typography component={Link} href="#" variant="body2" color="text.secondary" sx={{ textDecoration: 'none', '&:hover': { color: 'primary.main' } }}>Terms of Service</Typography>
+            <Box component="footer" sx={{ mt: 'auto', borderTop: 2, borderColor: 'divider', bgcolor: 'background.paper', py: 4, px: 3 }}>
+                <Container maxWidth={false} sx={{ maxWidth: 1400, display: 'flex', flexDirection: { xs: 'column', md: 'row' }, justifyContent: 'space-between', alignItems: { xs: 'flex-start', md: 'center' }, gap: 2 }}>
+                    <Box>
+                        <Typography variant="h6">EVMS 2.0</Typography>
+                        <Typography variant="caption" color="text.secondary">© 2026 Indore Municipal Corporation. Official Personnel Portal.</Typography>
                     </Box>
-                </Box>
+                    <Box sx={{ display: 'flex', gap: 4 }}>
+                        <Link href="#" style={{ color: 'inherit', textDecoration: 'none', fontWeight: 600, fontSize: '0.875rem' }}>LEGAL</Link>
+                        <Link href="#" style={{ color: 'inherit', textDecoration: 'none', fontWeight: 600, fontSize: '0.875rem' }}>SUPPORT</Link>
+                    </Box>
+                </Container>
             </Box>
 
         </Box>

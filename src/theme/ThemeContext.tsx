@@ -16,16 +16,16 @@ const ColorModeContext = createContext<ColorModeContextType>({
 export const useColorMode = () => useContext(ColorModeContext);
 
 export const ColorModeProvider = ({ children }: { children: React.ReactNode }) => {
-    // Check system preference eventually, but default to light for now
-    const [mode, setMode] = useState<'light' | 'dark'>('light');
-
-    // Optional: Load from local storage on mount
-    useEffect(() => {
-        const savedMode = localStorage.getItem('themeMode');
-        if (savedMode === 'light' || savedMode === 'dark') {
-            setMode(savedMode);
+    // Initialize from local storage or default to light
+    const [mode, setMode] = useState<'light' | 'dark'>(() => {
+        if (typeof window !== 'undefined') {
+            const savedMode = localStorage.getItem('themeMode');
+            if (savedMode === 'light' || savedMode === 'dark') {
+                return savedMode;
+            }
         }
-    }, []);
+        return 'light';
+    });
 
     const colorMode = useMemo(
         () => ({

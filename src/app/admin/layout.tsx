@@ -21,6 +21,7 @@ const drawerWidth = 240;
 
 import { useAuth } from '@/providers/AuthProvider';
 import { logout } from '@/lib/auth-actions';
+import GlobalSearch from '@/components/GlobalSearch';
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
     const pathname = usePathname();
@@ -104,13 +105,17 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                         <MenuIcon />
                     </IconButton>
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, flexGrow: 1 }}>
-                        <Box>
+                        <Box sx={{ display: { xs: 'none', md: 'block' } }}>
                             <Typography variant="caption" sx={{ letterSpacing: 1, textTransform: 'uppercase', opacity: 0.9, display: 'block' }}>
                                 Nagar Nigam Portal
                             </Typography>
                             <Typography variant="h6" noWrap component="div" fontWeight="bold">
                                 EVMS Admin Portal
                             </Typography>
+                        </Box>
+
+                        <Box sx={{ ml: { md: 4, xs: 0 }, flexGrow: { xs: 1, md: 0 } }}>
+                            <GlobalSearch />
                         </Box>
                     </Box>
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>

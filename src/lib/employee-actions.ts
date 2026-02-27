@@ -368,3 +368,31 @@ export async function deleteRecruitment(recruitmentId: string, employeeId: strin
     }
 }
 
+export async function searchEmployees(query: string) {
+    if (!query || query.length < 2) return [];
+
+    try {
+        const employees = await prisma.employee.findMany({
+            where: {
+                OR: [
+                    { firstName: { contains: query, mode: 'insensitive' } },
+                    { lastName: { contains: query, mode: 'insensitive' } },
+                    { employeeCode: { contains: query, mode: 'insensitive' } },
+                ],
+            },
+            select: {
+                id: true,
+                firstName: true,
+                lastName: true,
+                employeeCode: true,
+                designation: true,
+                photoUrl: true,
+            },
+            take: 5,
+        });
+        return employees;
+    } catch (error) {
+        console.error('Search Employees Error:', error);
+        return [];
+    }
+}

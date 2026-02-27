@@ -37,6 +37,7 @@ import { useState, useEffect } from 'react';
 import { getReports, updateReportStatus } from '@/lib/report-actions';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
+import { Employee } from '@/types/employee';
 
 // Type definition for Report
 interface Report {
@@ -44,12 +45,9 @@ interface Report {
     createdAt: Date;
     description: string;
     status: string;
-    employee?: {
-        firstName: string;
-        lastName: string;
-        department: string;
-    } | null;
+    employee?: Employee | null;
     images: { url: string }[];
+    location?: string | null;
 }
 
 import ImageIcon from '@mui/icons-material/Image';
@@ -89,7 +87,7 @@ export default function ReportsGrid({ initialReports }: ReportsGridProps) {
         // Keep for refreshing
         setLoading(true);
         const data = await getReports();
-        setReports(data as any);
+        setReports(data as unknown as Report[]);
         setLoading(false);
     };
 
@@ -241,7 +239,7 @@ export default function ReportsGrid({ initialReports }: ReportsGridProps) {
                                                 <Chip
                                                     label={report.status}
                                                     size="small"
-                                                    color={getStatusColor(report.status) as any}
+                                                    color={getStatusColor(report.status) as 'success' | 'error' | 'warning' | 'default'}
                                                     sx={{ fontWeight: 'bold' }}
                                                 />
                                             </TableCell>
@@ -307,7 +305,7 @@ export default function ReportsGrid({ initialReports }: ReportsGridProps) {
                                             </Box>
                                             <Chip
                                                 label={viewReport.status}
-                                                color={getStatusColor(viewReport.status) as any}
+                                                color={getStatusColor(viewReport.status) as 'success' | 'error' | 'warning' | 'default'}
                                                 sx={{ ml: 'auto', fontWeight: 'bold' }}
                                             />
                                         </Box>
@@ -331,20 +329,19 @@ export default function ReportsGrid({ initialReports }: ReportsGridProps) {
                                                 </Typography>
                                             </Box>
                                             <Box>
-                                                {/* Using 'any' cast for location property as it might be missing in strict interface but available in data */}
                                                 <Typography variant="caption" color="text.secondary">Location Coordinates</Typography>
                                                 <Typography variant="body2" fontWeight="medium">
-                                                    {(viewReport as any).location || 'N/A'}
+                                                    {viewReport.location || 'N/A'}
                                                 </Typography>
                                             </Box>
                                         </Box>
 
                                         {/* Map Action */}
-                                        {(viewReport as any).location && (
+                                        {viewReport.location && (
                                             <Button
                                                 variant="outlined"
                                                 startIcon={<LocationOnIcon />}
-                                                onClick={() => openMap((viewReport as any).location)}
+                                                onClick={() => openMap(viewReport.location!)}
                                                 fullWidth
                                             >
                                                 View on Google Maps

@@ -12,7 +12,8 @@ import {
     CircularProgress,
     Alert,
     Divider,
-    InputAdornment
+    InputAdornment,
+    Container
 } from '@mui/material';
 import { motion } from 'framer-motion';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
@@ -21,11 +22,13 @@ import LocationOnIcon from '@mui/icons-material/LocationOn';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import MyLocationIcon from '@mui/icons-material/MyLocation';
 import MicIcon from '@mui/icons-material/Mic';
+import AccountBalanceIcon from '@mui/icons-material/AccountBalance';
 import { useState, Suspense, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import DownloadReceipt from '../components/DownloadReceipt';
 import DuplicateWarning from '../components/DuplicateWarning';
 import { checkDuplicateReports } from '@/lib/report-actions';
+import Link from 'next/link';
 
 function ReportSubmitForm() {
     const router = useRouter();
@@ -38,7 +41,6 @@ function ReportSubmitForm() {
     const [reportId, setReportId] = useState('');
     const [duplicates, setDuplicates] = useState<any[]>([]);
 
-    // Form Data State
     const [formData, setFormData] = useState({
         category: '',
         description: '',
@@ -48,8 +50,6 @@ function ReportSubmitForm() {
         department: ''
     });
 
-
-
     const handleSubmit = async () => {
         setLoading(true);
 
@@ -58,13 +58,10 @@ function ReportSubmitForm() {
         submitData.append('description', formData.description);
         submitData.append('location', formData.location);
 
-        // Only append employeeId if it exists (for specific employee reports)
         if (formData.employeeId) {
             submitData.append('employeeId', formData.employeeId);
         }
 
-
-        // General Report Routing
         if (!formData.employeeId && formData.department) {
             submitData.append('department', formData.department);
         }
@@ -72,10 +69,6 @@ function ReportSubmitForm() {
         if (formData.photo) {
             submitData.append('photo', formData.photo);
         }
-
-        // Ideally import createReport at top, but for client component we can import logic or pass via props.
-        // Since we can't import server action directly into client component in all setups without specific config,
-        // let's assume we imported it. *Adding import in next step*
 
         try {
             const { createReport } = await import('@/lib/report-actions');
@@ -95,33 +88,24 @@ function ReportSubmitForm() {
         }
     };
 
-
-
     const [preview, setPreview] = useState<string | null>(null);
 
     const handlePhotoChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files && e.target.files[0]) {
             const file = e.target.files[0];
-
             try {
-                // Dynamic import to avoid SSR issues if library assumes window
                 const imageCompression = (await import('browser-image-compression')).default;
-
                 const options = {
                     maxSizeMB: 1,
                     maxWidthOrHeight: 1920,
                     useWebWorker: true
                 };
-
                 const compressedFile = await imageCompression(file, options);
                 setFormData({ ...formData, photo: compressedFile });
-
-                // Generate preview from compressed file
                 const objectUrl = URL.createObjectURL(compressedFile);
                 setPreview(objectUrl);
             } catch (error) {
                 console.error("Compression failed:", error);
-                // Fallback to original
                 setFormData({ ...formData, photo: file });
                 setPreview(URL.createObjectURL(file));
             }
@@ -129,72 +113,87 @@ function ReportSubmitForm() {
     };
 
     return (
-        <Box sx={{ width: '100%', maxWidth: 480, bgcolor: 'background.paper', minHeight: '100vh', display: 'flex', flexDirection: 'column', position: 'relative', boxShadow: 3 }}>
+        <Box sx={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', bgcolor: 'background.default', color: 'text.primary' }}>
 
-            {/* Header */}
-            <Box component="header" sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: 1, borderColor: 'divider', px: 2, py: 2, zIndex: 20, bgcolor: 'background.paper' }}>
-                <IconButton onClick={() => router.back()} sx={{ color: 'text.primary', bgcolor: 'action.hover' }}>
-                    <ArrowBackIcon />
-                </IconButton>
-                <Typography variant="subtitle1" fontWeight="bold">New Report</Typography>
-                <Box sx={{ width: 40 }} />
+            {/* Top Navigation */}
+            <Box component="header" sx={{ position: 'sticky', top: 0, zIndex: 1100, bgcolor: 'background.paper', borderBottom: 2, borderColor: 'divider', px: { xs: 2, md: 5 }, py: 1.5, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <Link href="/public/report" style={{ textDecoration: 'none', color: 'inherit' }}>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                        <ArrowBackIcon color="primary" />
+                        <Typography variant="subtitle2" sx={{ fontWeight: 800, textTransform: 'uppercase', letterSpacing: 1 }}>Public Reporting</Typography>
+                    </Box>
+                </Link>
+                <Box>
+                    <AccountBalanceIcon color="primary" sx={{ fontSize: 24 }} />
+                </Box>
             </Box>
 
-            {/* Main Content */}
-            <Box component="main" sx={{ flex: 1, p: 3, display: 'flex', flexDirection: 'column', gap: 4 }}>
+            <Container maxWidth="md" sx={{ flex: 1, py: { xs: 4, md: 8 } }}>
 
                 {/* Success View */}
                 {step === 3 && (
-                    <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', flex: 1, textAlign: 'center', gap: 2 }}>
-                        <Box sx={{ width: 80, height: 80, borderRadius: '50%', bgcolor: 'success.light', color: 'success.main', display: 'flex', alignItems: 'center', justifyContent: 'center', mb: 2 }}>
-                            <CheckCircleIcon sx={{ fontSize: 48 }} />
+                    <Box component={motion.div} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', gap: 4 }}>
+                        <Box sx={{ width: 100, height: 100, border: 4, borderColor: 'success.main', color: 'success.main', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                            <CheckCircleIcon sx={{ fontSize: 64 }} />
                         </Box>
-                        <Typography variant="h5" fontWeight="bold">Report Submitted!</Typography>
-                        <Typography variant="body2" color="text.secondary" >
-                            Your report ID is <strong>#{reportId}</strong>. You can track its status from the home page.
+                        <Box>
+                            <Typography variant="h3" sx={{ fontWeight: 900, mb: 1 }}>Submission Successful</Typography>
+                            <Typography variant="h6" color="text.secondary">Official Report ID: <strong>{reportId}</strong></Typography>
+                        </Box>
+
+                        <Typography variant="body1" color="text.secondary" sx={{ maxWidth: 500 }}>
+                            Your grievance has been registered in the secure government database. You can use the ID above to track the real-time resolution process.
                         </Typography>
 
-                        <Box sx={{ width: '100%', mt: 4, display: 'flex', flexDirection: 'column', gap: 2 }}>
+                        <Paper elevation={0} sx={{ width: '100%', maxWidth: 500, p: 4, border: 2, borderColor: 'divider', display: 'flex', flexDirection: 'column', gap: 3 }}>
                             <DownloadReceipt
                                 reportId={reportId}
                                 category={formData.category}
                                 location={formData.location}
                                 date={new Date()}
                             />
-                            <Button variant="contained" size="large" fullWidth href="/public/report">Return to Home</Button>
-                        </Box>
+                            <Divider />
+                            <Link href="/public/report" style={{ textDecoration: 'none' }}>
+                                <Button variant="contained" color="primary" size="large" fullWidth>Return to Portal</Button>
+                            </Link>
+                        </Paper>
                     </Box>
                 )}
 
-                {/* Form View (All Steps Combined) */}
+                {/* Form View */}
                 {step !== 3 && (
-                    <Box component={motion.div} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.5 }}>
-                        {/* Pre-fill Banner */}
+                    <Box component={motion.div} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.5 }} sx={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+
+                        <Box>
+                            <Typography variant="overline" color="primary">Official Submission</Typography>
+                            <Typography variant="h3" sx={{ fontWeight: 900, mb: 2 }}>File New Registry</Typography>
+                            <Typography variant="body1" color="text.secondary" sx={{ maxWidth: 600 }}>
+                                Provide accurate details and photographic evidence to ensure efficient processing by the Nagpur Nigam Indore administration.
+                            </Typography>
+                        </Box>
+
                         {employeeName && (
-                            <Alert severity="warning" sx={{ borderRadius: 3, mb: 3, boxShadow: 1 }}>
-                                Reporting against: <strong>{employeeName}</strong>
+                            <Alert severity="warning" variant="outlined" sx={{ borderRadius: 0, border: 2, fontWeight: 700 }}>
+                                FILING REPORT AGAINST: <strong>{employeeName}</strong>
                             </Alert>
                         )}
 
-                        {/* Department Selection (For General Reports) */}
+                        {/* Section: Context */}
                         {!employeeId && (
-                            <Paper elevation={0} sx={{ mb: 3, p: 3, borderRadius: 3, border: '1px solid', borderColor: 'divider' }}>
-                                <Typography variant="h6" fontWeight="bold" gutterBottom color="primary">Target Department</Typography>
-                                <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-                                    Since you are not reporting a specific employee, please select the relevant department.
-                                </Typography>
+                            <Paper elevation={0} sx={{ p: 4, border: 2, borderColor: 'divider' }}>
+                                <Typography variant="subtitle1" sx={{ fontWeight: 800, mb: 3, textTransform: 'uppercase' }}>Target Department</Typography>
                                 <TextField
                                     select
-                                    label="Select Department *"
+                                    label="Select Jurisdiction *"
                                     fullWidth
                                     value={formData.department}
                                     onChange={(e) => setFormData({ ...formData, department: e.target.value })}
-                                    sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }}
+                                    variant="outlined"
                                 >
-                                    <MenuItem value="Health">Health (Sanitation)</MenuItem>
-                                    <MenuItem value="Water">Water Works</MenuItem>
-                                    <MenuItem value="Revenue">Revenue</MenuItem>
-                                    <MenuItem value="Engineering">Engineering (Roads)</MenuItem>
+                                    <MenuItem value="Health">Health & Sanitation</MenuItem>
+                                    <MenuItem value="Water">Water Supply</MenuItem>
+                                    <MenuItem value="Revenue">Revenue Collection</MenuItem>
+                                    <MenuItem value="Engineering">Engineering & Roads</MenuItem>
                                     <MenuItem value="Town Planning">Town Planning</MenuItem>
                                     <MenuItem value="Fire">Fire Brigade</MenuItem>
                                     <MenuItem value="General">General Administration</MenuItem>
@@ -203,37 +202,34 @@ function ReportSubmitForm() {
                         )}
 
                         {/* Section 1: Issue Details */}
-                        <Paper elevation={0} sx={{ display: 'flex', flexDirection: 'column', gap: 3, p: 3, borderRadius: 3, border: '1px solid', borderColor: 'divider', mb: 3 }}>
-                            <Box>
-                                <Typography variant="h6" fontWeight="bold" gutterBottom color="primary">1. Issue Details</Typography>
-                                <Typography variant="body2" color="text.secondary">Categorize and describe the problem you're facing.</Typography>
-                            </Box>
+                        <Paper elevation={0} sx={{ p: 4, border: 2, borderColor: 'divider', display: 'flex', flexDirection: 'column', gap: 4 }}>
+                            <Typography variant="subtitle1" sx={{ fontWeight: 800, textTransform: 'uppercase' }}>1. Incident Details</Typography>
 
                             <TextField
                                 select
-                                label="Category *"
+                                label="Complaint Category *"
                                 fullWidth
                                 value={formData.category}
                                 onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-                                sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }}
+                                variant="outlined"
                             >
-                                <MenuItem value="sanitation">Sanitation & Garbage</MenuItem>
-                                <MenuItem value="water">Water Supply</MenuItem>
-                                <MenuItem value="roads">Roads & Potholes</MenuItem>
-                                <MenuItem value="electricity">Street Lights / Electricity</MenuItem>
+                                <MenuItem value="sanitation">Sanitation & Waste Management</MenuItem>
+                                <MenuItem value="water">Water Supply Issues</MenuItem>
+                                <MenuItem value="roads">Infrastructure & Potholes</MenuItem>
+                                <MenuItem value="electricity">Street Lighting & Utilities</MenuItem>
                                 <MenuItem value="encroachment">Illegal Encroachment</MenuItem>
-                                <MenuItem value="other">Other</MenuItem>
+                                <MenuItem value="other">Other Official Matters</MenuItem>
                             </TextField>
 
                             <TextField
-                                label="Description *"
+                                label="Detailed Description *"
                                 multiline
-                                rows={4}
+                                rows={5}
                                 fullWidth
-                                placeholder="Describe the issue in detail..."
+                                placeholder="Provide comprehensive details regarding the incident..."
                                 value={formData.description}
                                 onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                                sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }}
+                                variant="outlined"
                                 InputProps={{
                                     endAdornment: (
                                         <InputAdornment position="end">
@@ -251,16 +247,11 @@ function ReportSubmitForm() {
                                                                 description: prev.description ? `${prev.description} ${transcript}` : transcript
                                                             }));
                                                         };
-                                                        recognition.onerror = (event: any) => {
-                                                            console.error('Speech recognition error', event.error);
-                                                        };
                                                     } else {
                                                         alert('Voice input is not supported in this browser.');
                                                     }
                                                 }}
-                                                edge="end"
-                                                title="Speak Description"
-                                                sx={{ mb: 8 }} // Align with top
+                                                sx={{ mb: 'auto', mt: 1 }}
                                             >
                                                 <MicIcon color="primary" />
                                             </IconButton>
@@ -271,20 +262,17 @@ function ReportSubmitForm() {
                         </Paper>
 
                         {/* Section 2: Location & Evidence */}
-                        <Paper elevation={0} sx={{ display: 'flex', flexDirection: 'column', gap: 3, p: 3, borderRadius: 3, border: '1px solid', borderColor: 'divider' }}>
-                            <Box>
-                                <Typography variant="h6" fontWeight="bold" gutterBottom color="primary">2. Location & Evidence</Typography>
-                                <Typography variant="body2" color="text.secondary">Where did this happen? Adding a photo helps resolve issues faster.</Typography>
-                            </Box>
+                        <Paper elevation={0} sx={{ p: 4, border: 2, borderColor: 'divider', display: 'flex', flexDirection: 'column', gap: 4 }}>
+                            <Typography variant="subtitle1" sx={{ fontWeight: 800, textTransform: 'uppercase' }}>2. Evidence & Location</Typography>
 
                             <Box>
-                                <Typography variant="subtitle2" fontWeight="bold" gutterBottom>Location</Typography>
-                                <CustomTextField
+                                <Typography variant="caption" sx={{ fontWeight: 800, textTransform: 'uppercase', mb: 1, display: 'block' }}>Incident Location</Typography>
+                                <TextField
                                     fullWidth
-                                    placeholder="Enter address or landmark"
+                                    placeholder="GPS Coordinates or Landmark"
                                     value={formData.location}
-                                    onChange={(e: any) => setFormData({ ...formData, location: e.target.value })}
-                                    sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }}
+                                    onChange={(e) => setFormData({ ...formData, location: e.target.value })}
+                                    variant="outlined"
                                     InputProps={{
                                         endAdornment: (
                                             <InputAdornment position="end">
@@ -296,17 +284,10 @@ function ReportSubmitForm() {
                                                                     const { latitude, longitude } = position.coords;
                                                                     setFormData(prev => ({ ...prev, location: `${latitude.toFixed(6)}, ${longitude.toFixed(6)}` }));
                                                                 },
-                                                                (error) => {
-                                                                    console.error('Error getting location:', error);
-                                                                    alert('Could not fetch location. Please enter manually.');
-                                                                }
+                                                                () => alert('Could not fetch location.')
                                                             );
-                                                        } else {
-                                                            alert('Geolocation is not supported by your browser.');
                                                         }
                                                     }}
-                                                    edge="end"
-                                                    title="Use Current Location"
                                                 >
                                                     <MyLocationIcon color="primary" />
                                                 </IconButton>
@@ -317,19 +298,19 @@ function ReportSubmitForm() {
                             </Box>
 
                             <Box>
-                                <Typography variant="subtitle2" fontWeight="bold" gutterBottom>Photo Evidence</Typography>
+                                <Typography variant="caption" sx={{ fontWeight: 800, textTransform: 'uppercase', mb: 1, display: 'block' }}>Photographic Proof</Typography>
                                 <Paper
                                     variant="outlined"
                                     sx={{
-                                        height: 160,
+                                        height: 200,
                                         display: 'flex',
                                         flexDirection: 'column',
                                         alignItems: 'center',
                                         justifyContent: 'center',
                                         bgcolor: 'rgba(0,0,0,0.02)',
-                                        borderStyle: 'dashed',
+                                        borderStyle: formData.photo ? 'solid' : 'dashed',
                                         borderWidth: 2,
-                                        borderRadius: 3,
+                                        borderRadius: 0,
                                         cursor: 'pointer',
                                         position: 'relative',
                                         borderColor: formData.photo ? 'success.main' : 'divider',
@@ -345,81 +326,63 @@ function ReportSubmitForm() {
                                         onChange={handlePhotoChange}
                                     />
                                     {preview ? (
-                                        <Box sx={{ position: 'relative', width: '100%', height: '100%' }}>
-                                            <img
-                                                src={preview}
-                                                alt="Preview"
-                                                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                                            />
-                                            <Box sx={{
-                                                position: 'absolute',
-                                                inset: 0,
-                                                bgcolor: 'rgba(0,0,0,0.5)',
-                                                display: 'flex',
-                                                flexDirection: 'column',
-                                                alignItems: 'center',
-                                                justifyContent: 'center',
-                                                opacity: 0,
-                                                transition: '0.2s',
-                                                '&:hover': { opacity: 1 }
-                                            }}>
-                                                <AddPhotoAlternateIcon sx={{ color: 'white', mb: 1, fontSize: 32 }} />
-                                                <Typography variant="body2" fontWeight="bold" color="white">
-                                                    Change Photo
-                                                </Typography>
-                                            </Box>
-                                        </Box>
+                                        <img
+                                            src={preview}
+                                            alt="Preview"
+                                            style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                                        />
                                     ) : (
                                         <>
-                                            <Box sx={{ p: 2, borderRadius: '50%', bgcolor: 'primary.light', color: 'primary.main', mb: 1, opacity: 0.2 }}>
-                                                <AddPhotoAlternateIcon sx={{ fontSize: 32 }} />
-                                            </Box>
-                                            <Typography variant="body2" fontWeight="bold" color="text.primary">Click to upload photo</Typography>
-                                            <Typography variant="caption" color="text.secondary">or drag and drop</Typography>
+                                            <AddPhotoAlternateIcon sx={{ fontSize: 48, color: 'divider', mb: 1 }} />
+                                            <Typography variant="body2" sx={{ fontWeight: 800 }}>UPLOAD IMAGE</Typography>
+                                            <Typography variant="caption" color="text.secondary">DRAG & DROP OR CLICK TO BROWSE</Typography>
                                         </>
                                     )}
                                 </Paper>
                             </Box>
                         </Paper>
 
-
-
-                        {/* Duplicate Warning */}
                         <DuplicateWarning duplicates={duplicates} />
 
-                        {/* Action Bar */}
-                        <Box sx={{ pt: 2, pb: 4 }}>
+                        <Box sx={{ pt: 2, pb: 8 }}>
                             <Button
                                 variant="contained"
+                                color="primary"
                                 size="large"
                                 fullWidth
                                 disabled={loading || !formData.category || !formData.description || (!employeeId && !formData.department)}
                                 onClick={handleSubmit}
                                 startIcon={loading ? <CircularProgress size={20} color="inherit" /> : null}
-                                sx={{ py: 2, borderRadius: 3, fontWeight: 'bold', fontSize: '1.1rem', boxShadow: 4 }}
+                                sx={{ height: 64, fontWeight: 900, fontSize: '1.2rem' }}
                             >
-                                {loading ? 'Submitting Report...' : 'Submit Report'}
+                                {loading ? 'PROCESSING SUBMISSION...' : 'SUBMIT OFFICIAL REPORT'}
                             </Button>
                         </Box>
                     </Box>
                 )}
+            </Container>
+
+            {/* Footer */}
+            <Box component="footer" sx={{ mt: 'auto', borderTop: 2, borderColor: 'divider', bgcolor: 'background.paper', py: 4, px: 3 }}>
+                <Container maxWidth={false} sx={{ maxWidth: 1400, display: 'flex', flexDirection: { xs: 'column', md: 'row' }, justifyContent: 'space-between', alignItems: { xs: 'flex-start', md: 'center' }, gap: 2 }}>
+                    <Box>
+                        <Typography variant="h6">EVMS 2.0</Typography>
+                        <Typography variant="caption" color="text.secondary">© 2026 Indore Municipal Corporation. Official Registry Service.</Typography>
+                    </Box>
+                    <Box sx={{ display: 'flex', gap: 4 }}>
+                        <Typography component={Link} href="#" variant="body2" sx={{ color: 'inherit', textDecoration: 'none', fontWeight: 600 }}>LEGAL</Typography>
+                        <Typography component={Link} href="#" variant="body2" sx={{ color: 'inherit', textDecoration: 'none', fontWeight: 600 }}>SUPPORT</Typography>
+                    </Box>
+                </Container>
             </Box>
         </Box >
     );
-
-}
-
-// Wrapper for custom styling consistency if needed
-function CustomTextField(props: any) {
-    return <TextField {...props} variant="outlined" size="medium" />;
 }
 
 export default function ReportSubmitPage() {
     return (
-        <Box sx={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', bgcolor: '#f8fafc', alignItems: 'center' }}>
-            <Suspense fallback={<CircularProgress />}>
-                <ReportSubmitForm />
-            </Suspense>
-        </Box>
+        <Suspense fallback={<Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100vh' }}><CircularProgress color="primary" /></Box>}>
+            <ReportSubmitForm />
+        </Suspense>
     );
 }

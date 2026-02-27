@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { Box, Container, Typography, Button } from '@mui/material';
-import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
+import { ErrorOutline as ErrorOutlineIcon } from '@mui/icons-material';
 
 export default function NotFound() {
     return (
@@ -18,9 +18,11 @@ export default function NotFound() {
                 <Typography variant="body1" color="text.secondary" paragraph sx={{ mb: 4 }}>
                     The page you are looking for might have been removed, had its name changed, or is temporarily unavailable.
                 </Typography>
-                <Button variant="contained" size="large" component={Link} href="/">
-                    Return to Homepage
-                </Button>
+                <Link href="/" style={{ textDecoration: 'none' }}>
+                    <Button variant="contained" size="large">
+                        Return to Homepage
+                    </Button>
+                </Link>
             </Container>
         </Box>
     );

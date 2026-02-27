@@ -35,7 +35,7 @@ export default function EditEmployeePage() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [success, setSuccess] = useState(false);
-    const [employee, setEmployee] = useState<any>(null);
+    const [employee, setEmployee] = useState<any>(null); // eslint-disable-line @typescript-eslint/no-explicit-any
     const router = useRouter();
 
     useEffect(() => {
@@ -229,7 +229,7 @@ export default function EditEmployeePage() {
                                                 <TextField name="lastName" defaultValue={employee.lastName} required fullWidth size="small" InputProps={{ sx: { borderRadius: 2 } }} />
                                             </Grid>
                                             <Grid item xs={12} sm={6}>
-                                                <Typography variant="body2" fontWeight="bold" mb={0.5}>Father's Name</Typography>
+                                                <Typography variant="body2" fontWeight="bold" mb={0.5}>Father&apos;s Name</Typography>
                                                 <TextField name="fatherName" defaultValue={employee.fatherName} fullWidth size="small" InputProps={{ sx: { borderRadius: 2 } }} />
                                             </Grid>
                                             <Grid item xs={12} sm={6}>

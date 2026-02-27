@@ -32,17 +32,7 @@ import MenuIcon from '@mui/icons-material/Menu';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { getEmployees } from '@/lib/employee-actions';
-
-interface Employee {
-    id: string;
-    employeeCode: string;
-    firstName: string;
-    lastName: string;
-    department: string;
-    designation: string;
-    status: string;
-    contactNumber?: string | null;
-}
+import { Employee } from '@/types/employee';
 
 interface EmployeeListProps {
     initialEmployees: Employee[];
@@ -68,7 +58,7 @@ export default function EmployeeList({ initialEmployees, initialMeta }: Employee
         setLoading(true);
         try {
             const { data, meta: newMeta } = await getEmployees(page, meta.limit, currentFilters);
-            setEmployees(data as any);
+            setEmployees(data as unknown as Employee[]);
             setMeta(newMeta);
         } catch (err) {
             console.error(err);
@@ -97,7 +87,7 @@ export default function EmployeeList({ initialEmployees, initialMeta }: Employee
         (emp.employeeCode?.toLowerCase() || '').includes(search.toLowerCase())
     );
 
-    const getStatusColor = (status: string) => {
+    const getStatusColor = (status: string): "success" | "error" | "warning" | "default" => {
         switch (status) {
             case 'ACTIVE': return 'success';
             case 'INACTIVE': return 'error';
@@ -304,7 +294,7 @@ export default function EmployeeList({ initialEmployees, initialMeta }: Employee
                                                     <Chip
                                                         label={employee.status}
                                                         size="small"
-                                                        color={getStatusColor(employee.status) as any}
+                                                        color={getStatusColor(employee.status)}
                                                         variant="filled"
                                                         sx={{ fontWeight: 600, borderRadius: 1.5 }}
                                                     />
