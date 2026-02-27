@@ -368,31 +368,35 @@ export async function deleteRecruitment(recruitmentId: string, employeeId: strin
     }
 }
 
-export async function searchEmployees(query: string) {
-    if (!query || query.length < 2) return [];
-
+export async function deleteEmployee(id: string) {
     try {
-        const employees = await prisma.employee.findMany({
-            where: {
-                OR: [
-                    { firstName: { contains: query, mode: 'insensitive' } },
-                    { lastName: { contains: query, mode: 'insensitive' } },
-                    { employeeCode: { contains: query, mode: 'insensitive' } },
-                ],
-            },
-            select: {
-                id: true,
-                firstName: true,
-                lastName: true,
-                employeeCode: true,
-                designation: true,
-                photoUrl: true,
-            },
-            take: 5,
+        const cookieStore = await cookies();
+        const token = cookieStore.get('token')?.value;
+
+        if (!token) {
+            return { success: false, error: 'Unauthorized' };
+        }
+
+        const payload = await verifyJWT(token);
+        if (!payload || (payload.role !== 'ADMIN' && payload.role !== 'SUPER_ADMIN')) {
+            return { success: false, error: 'Unauthorized: Admin access required' };
+        }
+
+        // Before deleting employee, handle the QR code which is 1-1
+        await prisma.employeeQR.deleteMany({
+            where: { employeeId: id }
         });
-        return employees;
+
+        await prisma.employee.delete({
+            where: { id }
+        });
+
+        revalidatePath('/admin/employees');
+        await logAudit('DELETE_EMPLOYEE', `Deleted employee ID: ${id}`);
+        return { success: true };
     } catch (error) {
-        console.error('Search Employees Error:', error);
-        return [];
+        console.error('Delete Employee Error:', error);
+        return { success: false, error: 'Failed to delete employee. Ensure related records are handled.' };
     }
 }
+

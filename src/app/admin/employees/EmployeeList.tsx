@@ -31,8 +31,16 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import MenuIcon from '@mui/icons-material/Menu';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
-import { getEmployees } from '@/lib/employee-actions';
+import { getEmployees, deleteEmployee } from '@/lib/employee-actions';
 import { Employee } from '@/types/employee';
+import {
+    Dialog,
+    DialogTitle,
+    DialogContent,
+    DialogContentText,
+    DialogActions,
+    Snackbar
+} from '@mui/material';
 
 interface EmployeeListProps {
     initialEmployees: Employee[];
@@ -50,6 +58,16 @@ export default function EmployeeList({ initialEmployees, initialMeta }: Employee
     const [loading, setLoading] = useState(false);
     const [search, setSearch] = useState('');
 
+    // Delete state
+    const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+    const [employeeToDelete, setEmployeeToDelete] = useState<Employee | null>(null);
+    const [deleteLoading, setDeleteLoading] = useState(false);
+    const [snackbar, setSnackbar] = useState<{ open: boolean, message: string, severity: 'success' | 'error' }>({
+        open: false,
+        message: '',
+        severity: 'success'
+    });
+
     // Filters
     const [filterDept, setFilterDept] = useState('');
     const [filterDesignation, setFilterDesignation] = useState('');
@@ -64,6 +82,41 @@ export default function EmployeeList({ initialEmployees, initialMeta }: Employee
             console.error(err);
         } finally {
             setLoading(false);
+        }
+    };
+
+    const handleDeleteClick = (employee: Employee) => {
+        setEmployeeToDelete(employee);
+        setDeleteDialogOpen(true);
+    };
+
+    const handleDeleteConfirm = async () => {
+        if (!employeeToDelete) return;
+
+        setDeleteLoading(true);
+        try {
+            const result = await deleteEmployee(employeeToDelete.id);
+            if (result.success) {
+                setSnackbar({
+                    open: true,
+                    message: `Employee ${employeeToDelete.firstName} ${employeeToDelete.lastName} removed successfully`,
+                    severity: 'success'
+                });
+                // Refresh the list
+                fetchEmployees(meta.page, { department: filterDept, designation: filterDesignation });
+            } else {
+                throw new Error(result.error);
+            }
+        } catch (err: any) {
+            setSnackbar({
+                open: true,
+                message: err.message || 'Failed to delete employee',
+                severity: 'error'
+            });
+        } finally {
+            setDeleteLoading(false);
+            setDeleteDialogOpen(false);
+            setEmployeeToDelete(null);
         }
     };
 
@@ -321,6 +374,7 @@ export default function EmployeeList({ initialEmployees, initialMeta }: Employee
                                                         <IconButton
                                                             size="small"
                                                             color="error"
+                                                            onClick={() => handleDeleteClick(employee)}
                                                             sx={{
                                                                 bgcolor: 'error.lighter', // Verify if this exists or use action.hover
                                                                 '&:hover': { bgcolor: 'error.main', color: 'white' },
@@ -359,6 +413,51 @@ export default function EmployeeList({ initialEmployees, initialMeta }: Employee
                     </Stack>
                 </Box>
             </Box>
+
+            {/* Delete Confirmation Dialog */}
+            <Dialog
+                open={deleteDialogOpen}
+                onClose={() => !deleteLoading && setDeleteDialogOpen(false)}
+                PaperProps={{
+                    sx: { borderRadius: 3, p: 1 }
+                }}
+            >
+                <DialogTitle sx={{ fontWeight: 'bold' }}>Confirm Removal</DialogTitle>
+                <DialogContent>
+                    <DialogContentText>
+                        Are you sure you want to remove <strong>{employeeToDelete?.firstName} {employeeToDelete?.lastName}</strong>?
+                        This will permanently delete their records but professional history might remain in audit logs.
+                    </DialogContentText>
+                </DialogContent>
+                <DialogActions sx={{ px: 3, pb: 2 }}>
+                    <Button
+                        onClick={() => setDeleteDialogOpen(false)}
+                        disabled={deleteLoading}
+                        sx={{ borderRadius: 2 }}
+                    >
+                        Cancel
+                    </Button>
+                    <Button
+                        onClick={handleDeleteConfirm}
+                        color="error"
+                        variant="contained"
+                        disabled={deleteLoading}
+                        startIcon={deleteLoading && <CircularProgress size={16} color="inherit" />}
+                        sx={{ borderRadius: 2, bgcolor: 'error.main' }}
+                    >
+                        {deleteLoading ? 'Removing...' : 'Remove Employee'}
+                    </Button>
+                </DialogActions>
+            </Dialog>
+
+            {/* Feedback Snackbar */}
+            <Snackbar
+                open={snackbar.open}
+                autoHideDuration={6000}
+                onClose={() => setSnackbar({ ...snackbar, open: false })}
+                message={snackbar.message}
+                anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+            />
         </Box>
     );
 }
