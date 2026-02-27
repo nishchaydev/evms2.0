@@ -404,3 +404,53 @@ export async function deleteEmployee(id: string) {
     }
 }
 
+
+export async function searchEmployees(query: string) {
+    try {
+        const cookieStore = await cookies();
+        const token = cookieStore.get('token')?.value;
+        let userDepartment: string | null = null;
+        let userRole: string | null = null;
+
+        if (token) {
+            const payload = await verifyJWT(token);
+            if (payload) {
+                userRole = payload.role as string;
+                if (userRole !== 'SUPER_ADMIN' && userRole !== 'ADMIN') {
+                    userDepartment = payload.department as string;
+                }
+            }
+        }
+
+        const where: any = {
+            OR: [
+                { firstName: { contains: query, mode: 'insensitive' } },
+                { lastName: { contains: query, mode: 'insensitive' } },
+                { employeeCode: { contains: query, mode: 'insensitive' } },
+            ],
+        };
+
+        if (userDepartment) {
+            where.department = userDepartment;
+        }
+
+        const employees = await prisma.employee.findMany({
+            where,
+            take: 10,
+            select: {
+                id: true,
+                firstName: true,
+                lastName: true,
+                employeeCode: true,
+                designation: true,
+                photoUrl: true,
+                department: true
+            }
+        });
+
+        return employees;
+    } catch (error) {
+        console.error('Search Employees Error:', error);
+        return [];
+    }
+}
