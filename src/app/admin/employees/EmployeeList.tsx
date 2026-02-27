@@ -200,70 +200,108 @@ export default function EmployeeList({ initialEmployees, initialMeta }: Employee
                             size="small"
                             value={search}
                             onChange={(e) => setSearch(e.target.value)}
-                            sx={{ flex: 1, minWidth: 200, '& .MuiOutlinedInput-root': { borderRadius: 3 } }}
+                            sx={{
+                                flex: { xs: '1 1 100%', sm: 1 },
+                                minWidth: { xs: '100%', sm: 200 },
+                                '& .MuiOutlinedInput-root': { borderRadius: 3 }
+                            }}
                             InputProps={{
                                 startAdornment: <InputAdornment position="start"><SearchIcon color="action" /></InputAdornment>,
                             }}
                         />
 
-                        {/* Filters */}
-                        <TextField
-                            select
-                            label="Department"
-                            size="small"
-                            value={filterDept}
-                            onChange={(e) => setFilterDept(e.target.value)}
-                            sx={{ minWidth: 150 }}
-                            SelectProps={{ native: true }}
-                            InputLabelProps={{ shrink: true }}
+                        <Box sx={{
+                            display: 'flex',
+                            gap: 2,
+                            flex: { xs: '1 1 100%', sm: 'none' },
+                            flexWrap: { xs: 'wrap', sm: 'nowrap' }
+                        }}>
+                            <TextField
+                                select
+                                label="Department"
+                                size="small"
+                                value={filterDept}
+                                onChange={(e) => setFilterDept(e.target.value)}
+                                sx={{ flex: 1, minWidth: { xs: '100%', sm: 150 } }}
+                                SelectProps={{ native: true }}
+                                InputLabelProps={{ shrink: true }}
+                            >
+                                <option value="">All Depts</option>
+                                {departments.map((dept) => (
+                                    <option key={dept} value={dept}>{dept}</option>
+                                ))}
+                            </TextField>
+
+                            <TextField
+                                placeholder="Designation..."
+                                size="small"
+                                value={filterDesignation}
+                                onChange={(e) => setFilterDesignation(e.target.value)}
+                                sx={{ flex: 1, minWidth: { xs: '100%', sm: 150 } }}
+                            />
+                        </Box>
+
+                        <Box sx={{ display: 'flex', gap: 1, width: { xs: '100%', sm: 'auto' } }}>
+                            <Button
+                                variant="contained"
+                                onClick={handleFilterApply}
+                                fullWidth={true}
+                                sx={{ borderRadius: 3, px: 3, flex: { xs: 1, sm: 'none' } }}
+                            >
+                                Apply
+                            </Button>
+                            {(filterDept || filterDesignation) && (
+                                <Button
+                                    variant="text"
+                                    onClick={handleFilterClear}
+                                    sx={{ borderRadius: 3, flex: { xs: 1, sm: 'none' } }}
+                                >
+                                    Clear
+                                </Button>
+                            )}
+                        </Box>
+
+
+                        <Button
+                            variant="outlined"
+                            sx={{
+                                borderRadius: 3,
+                                borderColor: 'divider',
+                                color: 'text.secondary',
+                                px: 3,
+                                width: { xs: '100%', sm: 'auto' },
+                                ml: { xs: 0, sm: 'auto' }
+                            }}
+                            onClick={() => {
+                                const headers = ['ID', 'First Name', 'Last Name', 'Employee Code', 'Department', 'Designation', 'Status'];
+                                const csvContent = [
+                                    headers.join(','),
+                                    ...filteredEmployees.map(emp => [
+                                        emp.id,
+                                        `"${emp.firstName}"`,
+                                        `"${emp.lastName}"`,
+                                        `"${emp.employeeCode}"`,
+                                        `"${emp.department}"`,
+                                        `"${emp.designation}"`,
+                                        emp.status
+                                    ].join(','))
+                                ].join('\n');
+
+                                const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+                                const link = document.createElement('a');
+                                if (link.download !== undefined) {
+                                    const url = URL.createObjectURL(blob);
+                                    link.setAttribute('href', url);
+                                    link.setAttribute('download', 'employees_export.csv');
+                                    link.style.visibility = 'hidden';
+                                    document.body.appendChild(link);
+                                    link.click();
+                                    document.body.removeChild(link);
+                                }
+                            }}
                         >
-                            <option value="">All Depts</option>
-                            {departments.map((dept) => (
-                                <option key={dept} value={dept}>{dept}</option>
-                            ))}
-                        </TextField>
-
-                        <TextField
-                            placeholder="Designation..."
-                            size="small"
-                            value={filterDesignation}
-                            onChange={(e) => setFilterDesignation(e.target.value)}
-                            sx={{ minWidth: 150 }}
-                        />
-
-                        <Button variant="contained" onClick={handleFilterApply} sx={{ borderRadius: 3, px: 3 }}>Apply</Button>
-                        {(filterDept || filterDesignation) && (
-                            <Button variant="text" onClick={handleFilterClear} sx={{ borderRadius: 3 }}>Clear</Button>
-                        )}
-
-
-                        <Button variant="outlined" sx={{ borderRadius: 3, borderColor: 'divider', color: 'text.secondary', px: 3, ml: 'auto' }} onClick={() => {
-                            const headers = ['ID', 'First Name', 'Last Name', 'Employee Code', 'Department', 'Designation', 'Status'];
-                            const csvContent = [
-                                headers.join(','),
-                                ...filteredEmployees.map(emp => [
-                                    emp.id,
-                                    `"${emp.firstName}"`,
-                                    `"${emp.lastName}"`,
-                                    `"${emp.employeeCode}"`,
-                                    `"${emp.department}"`,
-                                    `"${emp.designation}"`,
-                                    emp.status
-                                ].join(','))
-                            ].join('\n');
-
-                            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-                            const link = document.createElement('a');
-                            if (link.download !== undefined) {
-                                const url = URL.createObjectURL(blob);
-                                link.setAttribute('href', url);
-                                link.setAttribute('download', 'employees_export.csv');
-                                link.style.visibility = 'hidden';
-                                document.body.appendChild(link);
-                                link.click();
-                                document.body.removeChild(link);
-                            }
-                        }}>Export CSV</Button>
+                            Export CSV
+                        </Button>
                     </Paper>
 
                     {/* Employees Table */}
@@ -273,9 +311,9 @@ export default function EmployeeList({ initialEmployees, initialMeta }: Employee
                                 <TableHead sx={{ bgcolor: 'rgba(0, 0, 0, 0.02)' }}>
                                     <TableRow>
                                         <TableCell sx={{ fontWeight: 'bold', py: 2 }}>Basic Info</TableCell>
-                                        <TableCell sx={{ fontWeight: 'bold', py: 2 }}>Designation & Dept</TableCell>
+                                        <TableCell sx={{ fontWeight: 'bold', py: 2, display: { xs: 'none', md: 'table-cell' } }}>Designation & Dept</TableCell>
                                         <TableCell sx={{ fontWeight: 'bold', py: 2 }}>Status</TableCell>
-                                        <TableCell sx={{ fontWeight: 'bold', py: 2 }}>Mobile</TableCell>
+                                        <TableCell sx={{ fontWeight: 'bold', py: 2, display: { xs: 'none', lg: 'table-cell' } }}>Mobile</TableCell>
                                         <TableCell align="right" sx={{ fontWeight: 'bold', py: 2 }}>Actions</TableCell>
                                     </TableRow>
                                 </TableHead>
@@ -336,7 +374,7 @@ export default function EmployeeList({ initialEmployees, initialMeta }: Employee
                                                         </Box>
                                                     </Box>
                                                 </TableCell>
-                                                <TableCell>
+                                                <TableCell sx={{ display: { xs: 'none', md: 'table-cell' } }}>
                                                     <Typography variant="body2" fontWeight="medium" textTransform="capitalize" sx={{ color: 'text.primary' }}>{employee.designation}</Typography>
                                                     <Chip
                                                         label={employee.department}
@@ -354,7 +392,7 @@ export default function EmployeeList({ initialEmployees, initialMeta }: Employee
                                                         sx={{ fontWeight: 600, borderRadius: 1.5 }}
                                                     />
                                                 </TableCell>
-                                                <TableCell>
+                                                <TableCell sx={{ display: { xs: 'none', lg: 'table-cell' } }}>
                                                     <Typography variant="body2" color="text.secondary" sx={{ fontFamily: 'monospace' }}>
                                                         {employee.contactNumber || 'N/A'}
                                                     </Typography>

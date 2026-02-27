@@ -105,7 +105,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                         <MenuIcon />
                     </IconButton>
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, flexGrow: 1 }}>
-                        <Box sx={{ display: { xs: 'none', md: 'block' } }}>
+                        <Box sx={{ display: { xs: 'none', lg: 'block' } }}>
                             <Typography variant="caption" sx={{ letterSpacing: 1, textTransform: 'uppercase', opacity: 0.9, display: 'block' }}>
                                 Nagar Nigam Portal
                             </Typography>
@@ -114,19 +114,30 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                             </Typography>
                         </Box>
 
+
                         <Box sx={{ ml: { md: 4, xs: 0 }, flexGrow: { xs: 1, md: 0 } }}>
                             <GlobalSearch />
                         </Box>
                     </Box>
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: { xs: 1, sm: 2 } }}>
                         <Box sx={{ textAlign: 'right', display: { xs: 'none', sm: 'block' } }}>
                             <Typography variant="body2" fontWeight="bold">{user?.username}</Typography>
                             <Typography variant="caption" sx={{ opacity: 0.8 }}>{user?.role}</Typography>
                         </Box>
-                        <Button color="inherit" onClick={handleLogout} startIcon={<LogoutIcon />}>
-                            Logout
+                        <Button
+                            color="inherit"
+                            onClick={handleLogout}
+                            startIcon={<LogoutIcon />}
+                            sx={{
+                                minWidth: 'fit-content',
+                                px: { xs: 1, sm: 2 },
+                                '& .MuiButton-startIcon': { mr: { xs: 0, sm: 1 } }
+                            }}
+                        >
+                            <Box component="span" sx={{ display: { xs: 'none', sm: 'inline' } }}>Logout</Box>
                         </Button>
                     </Box>
+
                 </Toolbar>
             </AppBar>
 

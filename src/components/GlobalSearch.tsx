@@ -74,6 +74,9 @@ export default function GlobalSearch() {
                 onChange={(e) => setQuery(e.target.value)}
                 autoComplete="off"
                 sx={{
+                    width: { xs: '140px', sm: '200px', md: '300px' },
+                    transition: 'width 0.3s ease-in-out',
+                    '&.Mui-focused': { width: { xs: '200px', sm: '300px', md: '400px' } },
                     '& .MuiOutlinedInput-root': {
                         borderRadius: 3,
                         bgcolor: 'rgba(255, 255, 255, 0.1)',
@@ -81,7 +84,10 @@ export default function GlobalSearch() {
                         '& fieldset': { borderColor: 'rgba(255, 255, 255, 0.2)' },
                         '&:hover fieldset': { borderColor: 'rgba(255, 255, 255, 0.4)' },
                     },
-                    '& .MuiInputBase-input::placeholder': { color: 'rgba(255, 255, 255, 0.6)' }
+                    '& .MuiInputBase-input::placeholder': {
+                        color: 'rgba(255, 255, 255, 0.6)',
+                        fontSize: { xs: '0.8rem', sm: '1rem' }
+                    }
                 }}
                 InputProps={{
                     startAdornment: (

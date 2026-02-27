@@ -104,16 +104,23 @@ export default function AdminDashboard({ initialStats, initialActivities, initia
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
 
             {/* Header */}
-            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', flexWrap: 'wrap', gap: 2 }}>
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: { xs: 'flex-start', sm: 'flex-end' }, flexDirection: { xs: 'column', sm: 'row' }, gap: 2 }}>
                 <Box>
-                    <Typography variant="h4" fontWeight="bold" sx={{ background: 'linear-gradient(45deg, #064E3B, #059669)', backgroundClip: 'text', textFillColor: 'transparent', width: 'fit-content' }}>
-
+                    <Typography variant="h4" fontWeight="bold" sx={{
+                        background: 'linear-gradient(45deg, #064E3B, #059669)',
+                        backgroundClip: 'text',
+                        textFillColor: 'transparent',
+                        width: 'fit-content',
+                        fontSize: { xs: '1.75rem', sm: '2.125rem' }
+                    }}>
                         Dashboard Overview
                     </Typography>
-                    <Typography variant="body1" color="text.secondary">Welcome to the Administration Portal</Typography>
+                    <Typography variant="body1" color="text.secondary" sx={{ fontSize: { xs: '0.875rem', sm: '1rem' } }}>
+                        Welcome to the Administration Portal
+                    </Typography>
                 </Box>
-                <Box sx={{ display: 'flex', gap: 2 }}>
-                    <Paper elevation={0} variant="outlined" sx={{ px: 2, py: 1, display: 'flex', alignItems: 'center', gap: 1, borderRadius: 3, bgcolor: 'rgba(255,255,255,0.5)', backdropFilter: 'blur(10px)' }}>
+                <Box sx={{ display: 'flex', gap: 2, width: { xs: '100%', sm: 'auto' } }}>
+                    <Paper elevation={0} variant="outlined" sx={{ px: 2, py: 1, display: 'flex', alignItems: 'center', gap: 1, borderRadius: 3, bgcolor: 'rgba(255,255,255,0.5)', backdropFilter: 'blur(10px)', width: { xs: '100%', sm: 'auto' } }}>
                         <AssessmentIcon color="action" fontSize="small" />
                         <Typography variant="body2" fontWeight="bold">{new Date().toLocaleDateString()}</Typography>
                     </Paper>
@@ -195,8 +202,8 @@ export default function AdminDashboard({ initialStats, initialActivities, initia
                             <TableHead sx={{ bgcolor: 'rgba(0,0,0,0.02)' }}>
                                 <TableRow>
                                     <TableCell sx={{ fontWeight: 'bold', py: 2 }}>Entity Name</TableCell>
-                                    <TableCell sx={{ fontWeight: 'bold', py: 2 }}>Activity Type</TableCell>
-                                    <TableCell sx={{ fontWeight: 'bold', py: 2 }}>Details</TableCell>
+                                    <TableCell sx={{ fontWeight: 'bold', py: 2, display: { xs: 'none', md: 'table-cell' } }}>Activity Type</TableCell>
+                                    <TableCell sx={{ fontWeight: 'bold', py: 2, display: { xs: 'none', lg: 'table-cell' } }}>Details</TableCell>
                                     <TableCell sx={{ fontWeight: 'bold', py: 2 }}>Status</TableCell>
                                     <TableCell align="right" sx={{ fontWeight: 'bold', py: 2 }}>Time</TableCell>
                                 </TableRow>
@@ -215,10 +222,10 @@ export default function AdminDashboard({ initialStats, initialActivities, initia
                                                 <Avatar sx={{ width: 32, height: 32, bgcolor: 'primary.light', color: 'primary.contrastText', fontSize: '0.875rem' }}>{row.name ? row.name.charAt(0) : 'S'}</Avatar>
                                                 <Typography variant="body2" fontWeight="medium">{row.name}</Typography>
                                             </TableCell>
-                                            <TableCell>
+                                            <TableCell sx={{ display: { xs: 'none', md: 'table-cell' } }}>
                                                 <Typography variant="body2" color="text.secondary">{row.type}</Typography>
                                             </TableCell>
-                                            <TableCell>
+                                            <TableCell sx={{ display: { xs: 'none', lg: 'table-cell' } }}>
                                                 <Typography variant="body2" color="text.secondary" noWrap sx={{ maxWidth: 200 }}>{row.desc}</Typography>
                                             </TableCell>
                                             <TableCell>

@@ -93,16 +93,39 @@ export default function QRGrid({ initialEmployees }: QRGridProps) {
                         <Typography variant="h4" fontWeight="bold" gutterBottom>Employee ID Cards</Typography>
                         <Typography variant="body1" color="text.secondary">Manage digital identities and print physical ID cards.</Typography>
                     </Box>
-                    <Box sx={{ display: 'flex', gap: 2 }}>
+                    <Box sx={{
+                        display: 'flex',
+                        gap: 2,
+                        flexDirection: { xs: 'column', sm: 'row' },
+                        width: { xs: '100%', sm: 'auto' }
+                    }}>
                         <TextField
                             size="small"
-                            placeholder="Search..."
+                            placeholder="Search by name or code..."
                             value={search}
                             onChange={(e) => setSearch(e.target.value)}
-                            InputProps={{ startAdornment: <InputAdornment position="start"><SearchIcon /></InputAdornment> }}
-                            sx={{ bgcolor: 'background.paper', borderRadius: 1 }}
+                            InputProps={{
+                                startAdornment: <InputAdornment position="start"><SearchIcon color="action" /></InputAdornment>,
+                                sx: { borderRadius: 3 }
+                            }}
+                            sx={{
+                                bgcolor: 'background.paper',
+                                flex: 1,
+                                minWidth: { sm: 250 }
+                            }}
                         />
-                        <Button variant="contained" startIcon={<PrintIcon />} onClick={handlePrint} sx={{ borderRadius: 2 }}>Print Physical IDs</Button>
+                        <Button
+                            variant="contained"
+                            startIcon={<PrintIcon />}
+                            onClick={handlePrint}
+                            sx={{
+                                borderRadius: 3,
+                                py: { xs: 1.5, sm: 1 },
+                                whiteSpace: 'nowrap'
+                            }}
+                        >
+                            Print Physical IDs
+                        </Button>
                     </Box>
                 </Box>
 
